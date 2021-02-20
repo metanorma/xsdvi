@@ -145,6 +145,7 @@ public class SymbolElement extends AbstractSymbol{
 	 */
 	@Override
 	public void draw() {
+                print("<a href=\"#\" onclick=\"window.parent.location.href = window.parent.location.href.split('#')[0]  + '#element_" +name+ "'\">");
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"'/>");
 		print("<rect class='boxelement' x='0' y='0' width='"+width+"' height='"+height+"'");
@@ -172,6 +173,7 @@ public class SymbolElement extends AbstractSymbol{
 		drawConnection();
 		drawUse();
 		drawGEnd();
+                print("</a>");
 	}
 	
 	/**
