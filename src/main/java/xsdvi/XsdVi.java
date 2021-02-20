@@ -2,6 +2,7 @@ package xsdvi;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -40,6 +41,7 @@ public final class XsdVi {
 	private static String styleUrl = null;
 	private static String rootNodeName = null;
         private static boolean oneElementOnly = false;
+        private static String outputPath = null;
        
         /**
 	 * 
@@ -47,6 +49,8 @@ public final class XsdVi {
 	public static final String ROOT_NODE_NAME = "rootNodeName";
         
         public static final String ONE_ELEMENT_ONLY = "oneElementOnly";
+        
+        public static final String OUTPUT_PATH = "outputPath";
         
 	/**
 	 * 
@@ -74,6 +78,12 @@ public final class XsdVi {
                     .required(false)
                     .build();
         
+        static final Option optionOutputPath = Option.builder(OUTPUT_PATH)
+                    .desc(" output folder")
+                    .hasArg()
+                    .required(false)
+                    .build();
+        
         static final Option optionEmbodyStyle = Option.builder(EMBODY_STYLE)
                     .desc(" css style will be embodied in each svg file, this is default")
                     .required(true)
@@ -95,6 +105,7 @@ public final class XsdVi {
             { 
                 addOption(optionRootNodeName);
                 addOption(optionOneElementOnly);
+                addOption(optionOutputPath);
             }
         };
 
@@ -102,6 +113,7 @@ public final class XsdVi {
             {
                 addOption(optionRootNodeName);
                 addOption(optionOneElementOnly);
+                addOption(optionOutputPath);
                 addOption(optionEmbodyStyle);
             }
         };
@@ -110,6 +122,7 @@ public final class XsdVi {
             {
                 addOption(optionRootNodeName);
                 addOption(optionOneElementOnly);
+                addOption(optionOutputPath);
                 addOption(optionGenerateStyle);
             }
         };
@@ -118,6 +131,7 @@ public final class XsdVi {
             {
                 addOption(optionRootNodeName);
                 addOption(optionOneElementOnly);
+                addOption(optionOutputPath);
                 addOption(optionUseStyle);
             }
         };
@@ -208,10 +222,18 @@ public final class XsdVi {
 	private static String outputUrl(String input) {
 		String[] field = input.split("[/\\\\]");
 		String in = field[field.length-1];
+                String elementName = "";
+                if (rootNodeName != null) {
+                    elementName = "." + rootNodeName;
+                }
+                String path = "";
+                if (outputPath != null) {
+                    path = outputPath;
+                }
 		if (in.toLowerCase().endsWith(".xsd")) {
-			return in.substring(0, in.length()-4) + ".svg";
+			return Paths.get(path, in.substring(0, in.length()-4) + elementName + ".svg").toString();
 		}
-		return in + ".svg";
+		return Paths.get(path, in + elementName + ".svg").toString();
 	}
 
 	/**
@@ -272,6 +294,8 @@ public final class XsdVi {
                 rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
                 
                 oneElementOnly = cmd.hasOption(ONE_ELEMENT_ONLY);
+                
+                outputPath = cmd.getOptionValue(OUTPUT_PATH);
                 
                 inputs.addAll(cmd.getArgList());
                 
