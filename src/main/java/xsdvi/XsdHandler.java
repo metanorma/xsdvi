@@ -14,6 +14,9 @@ public class XsdHandler {
 	private TreeBuilder builder;
 	private Stack<XSElementDeclaration> stack;
 	
+        private String rootNodeName;
+        private boolean oneElementOnly = false;
+        
 	/**
 	 * @param xsdSymbols
 	 */
@@ -21,20 +24,28 @@ public class XsdHandler {
 		this.builder = xsdSymbols;
 		stack = new Stack<XSElementDeclaration>();
 	}
-
+        
+        public void setRootNodeName(String rootNodeName) {
+            this.rootNodeName = rootNodeName;
+        }
+        
+        public void setOneElementOnly(boolean oneElementOnly) {
+            this.oneElementOnly = oneElementOnly;
+        }
+        
 	/**
 	 * @param model
 	 */
-	public void processModel(XSModel model, String rootName) {
+	public void processModel(XSModel model) {
     	if (model == null) {
     		return;
     	}
     	AbstractSymbol symbol = new SymbolSchema();
-        if (rootName == null) {
+        if (rootNodeName == null) {
             builder.setRoot(symbol);
         }
-        processElementDeclarations(model.getComponents(XSConstants.ELEMENT_DECLARATION), rootName);
-        if (rootName == null) {
+        processElementDeclarations(model.getComponents(XSConstants.ELEMENT_DECLARATION));
+        if (rootNodeName == null) {
             builder.levelUp();
         }
 	}
@@ -42,11 +53,11 @@ public class XsdHandler {
 	/**
 	 * @param map
 	 */
-	private void processElementDeclarations(XSNamedMap map, String rootName) {
+	private void processElementDeclarations(XSNamedMap map) {
             for(int i=0; i<map.getLength(); i++) {
                 String name = map.item(i).getName();
-                boolean isRoot = name.equals(rootName);
-                if (isRoot || rootName == null) {
+                boolean isRoot = name.equals(rootNodeName);
+                if (isRoot || rootNodeName == null) {
                     processElementDeclaration((XSElementDeclaration) map.item(i), null, isRoot);
                 }
             }
@@ -171,10 +182,15 @@ public class XsdHandler {
 			return;
 		}
 		stack.push(elementDeclaration);
-		//COMPLEX TYPE
-		if (typeDefinition.getTypeCategory()==XSTypeDefinition.COMPLEX_TYPE) {
-			processComplexTypeDefinition((XSComplexTypeDefinition) typeDefinition);
-    	}
+                
+                if (stack.size() > 1 && oneElementOnly) {
+                    //skip processing
+                } else {
+                    //COMPLEX TYPE
+                    if (typeDefinition.getTypeCategory()==XSTypeDefinition.COMPLEX_TYPE) {
+                            processComplexTypeDefinition((XSComplexTypeDefinition) typeDefinition);
+                    }
+                }
 		//IDENTITY CONSTRAINTS
 		processIdentityConstraints(elementDeclaration.getIdentityConstraints());
 		stack.pop();

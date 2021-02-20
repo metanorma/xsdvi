@@ -39,11 +39,14 @@ public final class XsdVi {
 	private static String style = null;
 	private static String styleUrl = null;
 	private static String rootNodeName = null;
+        private static boolean oneElementOnly = false;
        
         /**
 	 * 
 	 */
 	public static final String ROOT_NODE_NAME = "rootNodeName";
+        
+        public static final String ONE_ELEMENT_ONLY = "oneElementOnly";
         
 	/**
 	 * 
@@ -63,6 +66,11 @@ public final class XsdVi {
         static final Option optionRootNodeName = Option.builder(ROOT_NODE_NAME)
                     .desc(" schema root node name")
                     .hasArg()
+                    .required(false)
+                    .build();
+        
+        static final Option optionOneElementOnly = Option.builder(ONE_ELEMENT_ONLY)
+                    .desc(" show only one element")
                     .required(false)
                     .build();
         
@@ -86,12 +94,14 @@ public final class XsdVi {
         static final Options options = new Options() {
             { 
                 addOption(optionRootNodeName);
+                addOption(optionOneElementOnly);
             }
         };
 
         static final Options optionsEmbodyStyle = new Options() {
             {
                 addOption(optionRootNodeName);
+                addOption(optionOneElementOnly);
                 addOption(optionEmbodyStyle);
             }
         };
@@ -99,6 +109,7 @@ public final class XsdVi {
         static final Options optionsGenerateStyle = new Options() {
             {
                 addOption(optionRootNodeName);
+                addOption(optionOneElementOnly);
                 addOption(optionGenerateStyle);
             }
         };
@@ -106,14 +117,15 @@ public final class XsdVi {
         static final Options optionsUseStyle = new Options() {
             {
                 addOption(optionRootNodeName);
+                addOption(optionOneElementOnly);
                 addOption(optionUseStyle);
             }
         };
         
-        static final String CMD = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]]";
-        static final String CMD_EmbodyStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + EMBODY_STYLE;
-        static final String CMD_GenerateStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + GENERATE_STYLE;
-        static final String CMD_UseStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + USE_STYLE;
+        static final String CMD = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] [-" + ROOT_NODE_NAME + " <name>] -" + ONE_ELEMENT_ONLY;
+        static final String CMD_EmbodyStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + EMBODY_STYLE + " [-" + ROOT_NODE_NAME + " <name>] -" + ONE_ELEMENT_ONLY;
+        static final String CMD_GenerateStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + GENERATE_STYLE + " [-" + ROOT_NODE_NAME + " <name>] -" + ONE_ELEMENT_ONLY;
+        static final String CMD_UseStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + USE_STYLE + " [-" + ROOT_NODE_NAME + " <name>] -" + ONE_ELEMENT_ONLY;
         
         static final String USAGE = getUsage();
         
@@ -153,7 +165,7 @@ public final class XsdVi {
 		XsdHandler xsdHandler = new XsdHandler(builder);
 		WriterHelper writerHelper = new WriterHelper();
 		SvgForXsd svg = new SvgForXsd(writerHelper);
-		
+		svg.setHideMenuButtons(oneElementOnly);
                 
 		if (style.equals(EMBODY_STYLE)) {
 			logger.info("The style will be embodied");
@@ -176,7 +188,9 @@ public final class XsdVi {
 			logger.info("Parsing " + input + "...");
 			XSModel model = schemaLoader.loadURI(input);
 			logger.info("Processing XML Schema model...");
-			xsdHandler.processModel(model, rootNodeName);
+                        xsdHandler.setRootNodeName(rootNodeName);
+                        xsdHandler.setOneElementOnly(oneElementOnly);
+			xsdHandler.processModel(model);
 			logger.info("Drawing SVG " + output + "...");
 			writerHelper.newWriter(output);
 			svg.draw((AbstractSymbol) builder.getRoot());
@@ -209,29 +223,21 @@ public final class XsdVi {
                
             boolean cmdFail = false;
 
+            CommandLine cmd = null;
+            
             try {
-                CommandLine cmd = parser.parse(options, args);
+                cmd = parser.parse(options, args);
                 style = EMBODY_STYLE;
                 
-                rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
-                
-                inputs.addAll(cmd.getArgList());
-                
-                return;
             } catch (ParseException exp) {
                 cmdFail = true;
             }
 
             if(cmdFail) {
                 try {
-                    CommandLine cmd = parser.parse(optionsEmbodyStyle, args);
+                    cmd = parser.parse(optionsEmbodyStyle, args);
                     style = EMBODY_STYLE;
                     
-                    rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
-                    
-                    inputs.addAll(cmd.getArgList());
-                    
-                    return;
                 } catch (ParseException exp) {
                     cmdFail = true;
                 }
@@ -239,15 +245,10 @@ public final class XsdVi {
 
             if(cmdFail) {
                 try {
-                    CommandLine cmd = parser.parse(optionsGenerateStyle, args);
+                    cmd = parser.parse(optionsGenerateStyle, args);
                     style = GENERATE_STYLE;
                     styleUrl = cmd.getOptionValue(GENERATE_STYLE);
                     
-                    rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
-                    
-                    inputs.addAll(cmd.getArgList());
-                    
-                    return;
                 } catch (ParseException exp) {
                     cmdFail = true;
                 }
@@ -255,15 +256,10 @@ public final class XsdVi {
 
             if(cmdFail) {
                 try {
-                    CommandLine cmd = parser.parse(optionsUseStyle, args);
+                    cmd = parser.parse(optionsUseStyle, args);
                     style = USE_STYLE;
                     styleUrl = cmd.getOptionValue(USE_STYLE);
                     
-                    rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
-                    
-                    inputs.addAll(cmd.getArgList());
-                    
-                    return;
                 } catch (ParseException exp) {
                     cmdFail = true;
                 }
@@ -272,7 +268,16 @@ public final class XsdVi {
             if (cmdFail) {
                 printUsage();
                 System.exit(ERROR_EXIT_CODE);
+            } else {
+                rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
+                
+                oneElementOnly = cmd.hasOption(ONE_ELEMENT_ONLY);
+                
+                inputs.addAll(cmd.getArgList());
+                
+                return;
             }
+            
             
             
             

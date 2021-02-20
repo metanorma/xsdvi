@@ -11,7 +11,9 @@ public class SvgForXsd {
 	protected WriterHelper writer;
 	private String styleUri = null;
 	private boolean embodyStyle = true;
-
+        
+        private boolean hideMenuButtons = false;
+        
 	/**
 	 * 
 	 */
@@ -118,7 +120,7 @@ public class SvgForXsd {
 		"      }\n"+
 		"    }\n"+
 		"    setHeight(yTrans(eBoxLast)+"+(AbstractSymbol.MAX_HEIGHT+AbstractSymbol.Y_INDENT)+");\n"+
-		"    setWidth(maxX+300);\n"+
+		"    setWidth(maxX+360);\n"+
 		"  }\n"+
 		"\n"+
 		"////////// collapseAll()\n"+
@@ -148,7 +150,7 @@ public class SvgForXsd {
 		"      if (x > maxX) maxX = x;\n"+
 		"    }\n"+
 		"    setHeight(yTrans(eBoxLast)+"+(AbstractSymbol.MAX_HEIGHT+AbstractSymbol.Y_INDENT)+");\n"+
-		"    setWidth(maxX+300);\n"+
+		"    setWidth(maxX+360);\n"+
 		"  }\n"+
 		"\n"+
 		"////////// makeVisible(string)\n"+
@@ -412,7 +414,9 @@ public class SvgForXsd {
         
         printDefs(embodyStyle, true);
 
-    	print(MENU_BUTTONS);
+        if (!hideMenuButtons) {
+            print(MENU_BUTTONS);
+        }
 	}
 
 	/**
@@ -444,6 +448,10 @@ public class SvgForXsd {
 		this.writer = w;
 	}
 	
+        public void setHideMenuButtons(boolean hideMenuButtons) {
+            this.hideMenuButtons = hideMenuButtons;
+        }
+        
 	/**
 	 * @param embody
 	 */
