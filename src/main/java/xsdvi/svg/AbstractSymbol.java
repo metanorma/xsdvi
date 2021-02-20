@@ -156,7 +156,9 @@ public abstract class AbstractSymbol extends TreeElement {
 			print("<path class='connection' d='M"+(10-X_INDENT)+","+(-15-Y_INDENT)+" Q"+(10-X_INDENT)+",15 0,"+MAX_HEIGHT/2+"'/>");
 		}
 		else {
+                    if (hasParent()) {
 			print("<line class='connection' x1='"+(10-X_INDENT)+"' y1='"+MAX_HEIGHT/2+"' x2='0' y2='"+MAX_HEIGHT/2+"'/>");
+                    }
 		}
 	}
 

@@ -30,9 +30,13 @@ public class XsdHandler {
     		return;
     	}
     	AbstractSymbol symbol = new SymbolSchema();
-    	builder.setRoot(symbol);
+        if (rootName == null) {
+            builder.setRoot(symbol);
+        }
         processElementDeclarations(model.getComponents(XSConstants.ELEMENT_DECLARATION), rootName);
-        builder.levelUp();
+        if (rootName == null) {
+            builder.levelUp();
+        }
 	}
 
 	/**
@@ -41,8 +45,9 @@ public class XsdHandler {
 	private void processElementDeclarations(XSNamedMap map, String rootName) {
             for(int i=0; i<map.getLength(); i++) {
                 String name = map.item(i).getName();
-                if (name.equals(rootName) || rootName == null) {
-                    processElementDeclaration((XSElementDeclaration) map.item(i), null);
+                boolean isRoot = name.equals(rootName);
+                if (isRoot || rootName == null) {
+                    processElementDeclaration((XSElementDeclaration) map.item(i), null, isRoot);
                 }
             }
 	}
@@ -64,7 +69,7 @@ public class XsdHandler {
 			processModelGroup((XSModelGroup) term, cardinality);
 		}
 		else if (type == XSConstants.ELEMENT_DECLARATION) {
-			processElementDeclaration((XSElementDeclaration) term, cardinality);
+			processElementDeclaration((XSElementDeclaration) term, cardinality, false);
 		}
 		else if (type == XSConstants.WILDCARD) {
 			processElementWildcard((XSWildcard) term, cardinality);
@@ -144,7 +149,7 @@ public class XsdHandler {
 	 * @param elementDeclaration
 	 * @param cardinality
 	 */
-	private void processElementDeclaration(XSElementDeclaration elementDeclaration, String cardinality) {
+	private void processElementDeclaration(XSElementDeclaration elementDeclaration, String cardinality, boolean isRoot) {
 		XSTypeDefinition typeDefinition	= elementDeclaration.getTypeDefinition();
 		
 		SymbolElement symbol = new SymbolElement();
@@ -155,7 +160,11 @@ public class XsdHandler {
 		symbol.setNillable(elementDeclaration.getNillable());
 		symbol.setAbstr(elementDeclaration.getAbstract());
 		symbol.setSubstitution(getSubstitutionString(elementDeclaration));
-    	builder.appendChild(symbol);
+                if (isRoot) {
+                    builder.setRoot(symbol);
+                } else {
+                    builder.appendChild(symbol);
+                }
 		//LOOP
 		if (processLoop(elementDeclaration)) {
 			builder.levelUp();
