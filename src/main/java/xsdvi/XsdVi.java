@@ -38,7 +38,13 @@ public final class XsdVi {
 	private static List<String> inputs = new ArrayList<String>();
 	private static String style = null;
 	private static String styleUrl = null;
+	private static String rootNodeName = null;
        
+        /**
+	 * 
+	 */
+	public static final String ROOT_NODE_NAME = "rootNodeName";
+        
 	/**
 	 * 
 	 */
@@ -54,6 +60,12 @@ public final class XsdVi {
 	 */
 	public static final String USE_STYLE = "useStyle";
 	
+        static final Option optionRootNodeName = Option.builder(ROOT_NODE_NAME)
+                    .desc(" schema root node name")
+                    .hasArg()
+                    .required(false)
+                    .build();
+        
         static final Option optionEmbodyStyle = Option.builder(EMBODY_STYLE)
                     .desc(" css style will be embodied in each svg file, this is default")
                     .required(true)
@@ -73,23 +85,27 @@ public final class XsdVi {
          
         static final Options options = new Options() {
             { 
+                addOption(optionRootNodeName);
             }
         };
 
         static final Options optionsEmbodyStyle = new Options() {
             {
+                addOption(optionRootNodeName);
                 addOption(optionEmbodyStyle);
             }
         };
         
         static final Options optionsGenerateStyle = new Options() {
             {
+                addOption(optionRootNodeName);
                 addOption(optionGenerateStyle);
             }
         };
         
         static final Options optionsUseStyle = new Options() {
             {
+                addOption(optionRootNodeName);
                 addOption(optionUseStyle);
             }
         };
@@ -160,7 +176,7 @@ public final class XsdVi {
 			logger.info("Parsing " + input + "...");
 			XSModel model = schemaLoader.loadURI(input);
 			logger.info("Processing XML Schema model...");
-			xsdHandler.processModel(model);
+			xsdHandler.processModel(model, rootNodeName);
 			logger.info("Drawing SVG " + output + "...");
 			writerHelper.newWriter(output);
 			svg.draw((AbstractSymbol) builder.getRoot());
@@ -197,6 +213,8 @@ public final class XsdVi {
                 CommandLine cmd = parser.parse(options, args);
                 style = EMBODY_STYLE;
                 
+                rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
+                
                 inputs.addAll(cmd.getArgList());
                 
                 return;
@@ -208,6 +226,8 @@ public final class XsdVi {
                 try {
                     CommandLine cmd = parser.parse(optionsEmbodyStyle, args);
                     style = EMBODY_STYLE;
+                    
+                    rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
                     
                     inputs.addAll(cmd.getArgList());
                     
@@ -223,6 +243,8 @@ public final class XsdVi {
                     style = GENERATE_STYLE;
                     styleUrl = cmd.getOptionValue(GENERATE_STYLE);
                     
+                    rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
+                    
                     inputs.addAll(cmd.getArgList());
                     
                     return;
@@ -236,6 +258,8 @@ public final class XsdVi {
                     CommandLine cmd = parser.parse(optionsUseStyle, args);
                     style = USE_STYLE;
                     styleUrl = cmd.getOptionValue(USE_STYLE);
+                    
+                    rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
                     
                     inputs.addAll(cmd.getArgList());
                     

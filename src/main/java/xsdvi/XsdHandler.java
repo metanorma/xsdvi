@@ -25,23 +25,26 @@ public class XsdHandler {
 	/**
 	 * @param model
 	 */
-	public void processModel(XSModel model) {
+	public void processModel(XSModel model, String rootName) {
     	if (model == null) {
     		return;
     	}
     	AbstractSymbol symbol = new SymbolSchema();
     	builder.setRoot(symbol);
-        processElementDeclarations(model.getComponents(XSConstants.ELEMENT_DECLARATION));
+        processElementDeclarations(model.getComponents(XSConstants.ELEMENT_DECLARATION), rootName);
         builder.levelUp();
 	}
 
 	/**
 	 * @param map
 	 */
-	private void processElementDeclarations(XSNamedMap map) {
-		for(int i=0; i<map.getLength(); i++) {
-        	processElementDeclaration((XSElementDeclaration) map.item(i), null);
-        }
+	private void processElementDeclarations(XSNamedMap map, String rootName) {
+            for(int i=0; i<map.getLength(); i++) {
+                String name = map.item(i).getName();
+                if (name.equals(rootName) || rootName == null) {
+                    processElementDeclaration((XSElementDeclaration) map.item(i), null);
+                }
+            }
 	}
 
 	/**
