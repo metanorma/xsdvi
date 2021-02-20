@@ -15,7 +15,7 @@ public class XsdHandler {
 	private Stack<XSElementDeclaration> stack;
 	
         private String rootNodeName;
-        private boolean oneElementOnly = false;
+        private boolean oneNodeOnly = false;
         
 	/**
 	 * @param xsdSymbols
@@ -29,8 +29,8 @@ public class XsdHandler {
             this.rootNodeName = rootNodeName;
         }
         
-        public void setOneElementOnly(boolean oneElementOnly) {
-            this.oneElementOnly = oneElementOnly;
+        public void setOneNodeOnly(boolean oneNodeOnly) {
+            this.oneNodeOnly = oneNodeOnly;
         }
         
 	/**
@@ -45,6 +45,7 @@ public class XsdHandler {
             builder.setRoot(symbol);
         }
         processElementDeclarations(model.getComponents(XSConstants.ELEMENT_DECLARATION));
+        
         if (rootNodeName == null) {
             builder.levelUp();
         }
@@ -183,7 +184,7 @@ public class XsdHandler {
 		}
 		stack.push(elementDeclaration);
                 
-                if (stack.size() > 1 && oneElementOnly) {
+                if (stack.size() > 1 && oneNodeOnly) {
                     //skip processing
                 } else {
                     //COMPLEX TYPE

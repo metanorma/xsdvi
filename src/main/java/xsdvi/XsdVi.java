@@ -40,7 +40,7 @@ public final class XsdVi {
 	private static String style = null;
 	private static String styleUrl = null;
 	private static String rootNodeName = null;
-        private static boolean oneElementOnly = false;
+        private static boolean oneNodeOnly = false;
         private static String outputPath = null;
        
         /**
@@ -48,7 +48,7 @@ public final class XsdVi {
 	 */
 	public static final String ROOT_NODE_NAME = "rootNodeName";
         
-        public static final String ONE_ELEMENT_ONLY = "oneElementOnly";
+        public static final String ONE_NODE_ONLY = "oneNodeOnly";
         
         public static final String OUTPUT_PATH = "outputPath";
         
@@ -73,7 +73,7 @@ public final class XsdVi {
                     .required(false)
                     .build();
         
-        static final Option optionOneElementOnly = Option.builder(ONE_ELEMENT_ONLY)
+        static final Option optionOneNodeOnly = Option.builder(ONE_NODE_ONLY)
                     .desc(" show only one element")
                     .required(false)
                     .build();
@@ -104,7 +104,7 @@ public final class XsdVi {
         static final Options options = new Options() {
             { 
                 addOption(optionRootNodeName);
-                addOption(optionOneElementOnly);
+                addOption(optionOneNodeOnly);
                 addOption(optionOutputPath);
             }
         };
@@ -112,7 +112,7 @@ public final class XsdVi {
         static final Options optionsEmbodyStyle = new Options() {
             {
                 addOption(optionRootNodeName);
-                addOption(optionOneElementOnly);
+                addOption(optionOneNodeOnly);
                 addOption(optionOutputPath);
                 addOption(optionEmbodyStyle);
             }
@@ -121,7 +121,7 @@ public final class XsdVi {
         static final Options optionsGenerateStyle = new Options() {
             {
                 addOption(optionRootNodeName);
-                addOption(optionOneElementOnly);
+                addOption(optionOneNodeOnly);
                 addOption(optionOutputPath);
                 addOption(optionGenerateStyle);
             }
@@ -130,16 +130,18 @@ public final class XsdVi {
         static final Options optionsUseStyle = new Options() {
             {
                 addOption(optionRootNodeName);
-                addOption(optionOneElementOnly);
+                addOption(optionOneNodeOnly);
                 addOption(optionOutputPath);
                 addOption(optionUseStyle);
             }
         };
         
-        static final String CMD = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] [-" + ROOT_NODE_NAME + " <name>] -" + ONE_ELEMENT_ONLY;
-        static final String CMD_EmbodyStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + EMBODY_STYLE + " [-" + ROOT_NODE_NAME + " <name>] -" + ONE_ELEMENT_ONLY;
-        static final String CMD_GenerateStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + GENERATE_STYLE + " [-" + ROOT_NODE_NAME + " <name>] -" + ONE_ELEMENT_ONLY;
-        static final String CMD_UseStyle = "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] -" + USE_STYLE + " [-" + ROOT_NODE_NAME + " <name>] -" + ONE_ELEMENT_ONLY;
+        static final String CMD_common_prefix =  "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]]";
+        static final String CMD_common_suffix =  " [-" + ROOT_NODE_NAME + " <name>] -" + ONE_NODE_ONLY;
+        static final String CMD = CMD_common_prefix + CMD_common_suffix;
+        static final String CMD_EmbodyStyle = CMD_common_prefix + " -" + EMBODY_STYLE + CMD_common_suffix;
+        static final String CMD_GenerateStyle = CMD_common_prefix + " -" + GENERATE_STYLE + CMD_common_suffix;
+        static final String CMD_UseStyle = CMD_common_prefix + " -" + USE_STYLE + CMD_common_suffix;
         
         static final String USAGE = getUsage();
         
@@ -179,7 +181,7 @@ public final class XsdVi {
 		XsdHandler xsdHandler = new XsdHandler(builder);
 		WriterHelper writerHelper = new WriterHelper();
 		SvgForXsd svg = new SvgForXsd(writerHelper);
-		svg.setHideMenuButtons(oneElementOnly);
+		svg.setHideMenuButtons(oneNodeOnly);
                 
 		if (style.equals(EMBODY_STYLE)) {
 			logger.info("The style will be embodied");
@@ -203,12 +205,16 @@ public final class XsdVi {
 			XSModel model = schemaLoader.loadURI(input);
 			logger.info("Processing XML Schema model...");
                         xsdHandler.setRootNodeName(rootNodeName);
-                        xsdHandler.setOneElementOnly(oneElementOnly);
+                        xsdHandler.setOneNodeOnly(oneNodeOnly);
 			xsdHandler.processModel(model);
 			logger.info("Drawing SVG " + output + "...");
 			writerHelper.newWriter(output);
-			svg.draw((AbstractSymbol) builder.getRoot());
-			logger.info("Done.");
+                        if (builder.getRoot() != null) {
+                            svg.draw((AbstractSymbol) builder.getRoot());
+                            logger.info("Done.");
+                        } else {
+                            logger.severe("SVG is empty!");
+                        }
 		}
 		
 		//new xsdvi.svg.SvgSymbols(writerHelper).drawSymbols();
@@ -222,18 +228,22 @@ public final class XsdVi {
 	private static String outputUrl(String input) {
 		String[] field = input.split("[/\\\\]");
 		String in = field[field.length-1];
-                String elementName = "";
-                if (rootNodeName != null) {
-                    elementName = "." + rootNodeName;
+                String filename = ".svg";
+                if (rootNodeName == null || (rootNodeName != null && oneNodeOnly == false)) {
+                    if (in.toLowerCase().endsWith(".xsd")) {
+                        filename = in.substring(0, in.length()-4) + filename;
+                    } else {
+                        filename = in + filename;
+                    }
+                } else {
+                    filename = rootNodeName + filename;
                 }
+                
                 String path = "";
                 if (outputPath != null) {
                     path = outputPath;
                 }
-		if (in.toLowerCase().endsWith(".xsd")) {
-			return Paths.get(path, in.substring(0, in.length()-4) + elementName + ".svg").toString();
-		}
-		return Paths.get(path, in + elementName + ".svg").toString();
+                return Paths.get(path, filename).toString();
 	}
 
 	/**
@@ -293,7 +303,7 @@ public final class XsdVi {
             } else {
                 rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
                 
-                oneElementOnly = cmd.hasOption(ONE_ELEMENT_ONLY);
+                oneNodeOnly = cmd.hasOption(ONE_NODE_ONLY);
                 
                 outputPath = cmd.getOptionValue(OUTPUT_PATH);
                 
