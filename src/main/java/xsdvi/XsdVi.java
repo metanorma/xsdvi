@@ -68,7 +68,7 @@ public final class XsdVi {
 	public static final String USE_STYLE = "useStyle";
 	
         static final Option optionRootNodeName = Option.builder(ROOT_NODE_NAME)
-                    .desc(" schema root node name")
+                    .desc(" schema root node name (or 'all' for all elements)")
                     .hasArg()
                     .required(false)
                     .build();
@@ -199,21 +199,31 @@ public final class XsdVi {
 		}
 		
 		for (String input : inputs) {
-			String output = outputUrl(input);
-			
+                    
 			logger.info("Parsing " + input + "...");
 			XSModel model = schemaLoader.loadURI(input);
 			logger.info("Processing XML Schema model...");
-                        xsdHandler.setRootNodeName(rootNodeName);
-                        xsdHandler.setOneNodeOnly(oneNodeOnly);
-			xsdHandler.processModel(model);
-			logger.info("Drawing SVG " + output + "...");
-			writerHelper.newWriter(output);
-                        if (builder.getRoot() != null) {
-                            svg.draw((AbstractSymbol) builder.getRoot());
-                            logger.info("Done.");
+                        List<String> elementsNames = null;
+                        if (rootNodeName.equals("all")) {
+                            elementsNames = xsdHandler.getElementsNames(model);
                         } else {
-                            logger.severe("SVG is empty!");
+                            elementsNames.add(rootNodeName);
+                        }
+                        
+                        for(String elementName: elementsNames) {
+                            rootNodeName = elementName;
+                            String output = outputUrl(input);
+                            xsdHandler.setRootNodeName(rootNodeName);
+                            xsdHandler.setOneNodeOnly(oneNodeOnly);
+                            xsdHandler.processModel(model);
+                            logger.info("Drawing SVG " + output + "...");
+                            writerHelper.newWriter(output);
+                            if (builder.getRoot() != null) {
+                                svg.draw((AbstractSymbol) builder.getRoot());
+                                logger.info("Done.");
+                            } else {
+                                logger.severe("SVG is empty!");
+                            }
                         }
 		}
 		

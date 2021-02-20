@@ -1,5 +1,7 @@
 package xsdvi;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.apache.xerces.xs.*;
@@ -50,7 +52,19 @@ public class XsdHandler {
             builder.levelUp();
         }
 	}
-
+        
+        public List<String> getElementsNames(XSModel model) {
+            ArrayList<String> names = new ArrayList<>();
+            if (model == null) {
+                return names;
+            }
+            XSNamedMap map = model.getComponents(XSConstants.ELEMENT_DECLARATION);
+            for(int i=0; i<map.getLength(); i++) {
+                names.add(map.item(i).getName());
+            }
+            return names;
+        }
+        
 	/**
 	 * @param map
 	 */
