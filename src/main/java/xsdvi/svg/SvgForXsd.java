@@ -317,7 +317,9 @@ public class SvgForXsd {
 		".skip {fill: #cc6666; stroke: black;}\n"+
 		".strict {fill: black; stroke: none;}\n"+
 		"\n"+
-		".border {fill: #f9f9f9; stroke: #dddddd;}";
+		".border {fill: #f9f9f9; stroke: #dddddd;}\n"+
+                "\n"+
+                ".elementlink {fill: blue;}";
 
 	/**
 	 * 
