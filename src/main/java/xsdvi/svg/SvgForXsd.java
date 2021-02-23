@@ -309,6 +309,7 @@ public class SvgForXsd {
 		".filled {fill: black; stroke: none;}\n"+
 		"\n"+
 		".boxelement, .boxany, .boxattribute1, .boxanyattribute {fill: #FFFFBB; stroke: #776633; pointer-events: all;}\n"+
+                ".boxelementoptional {fill: #FFFFBB; stroke: #776633; pointer-events: all; stroke-dasharray: 2;}\n"+
 		".boxattribute2 {fill: #FFFFBB; stroke: #776633; pointer-events: all; stroke-dasharray: 2;}\n"+
 		".boxschema, .boxloop, .boxcompositor {fill: #E7EBF3; stroke: #666677;}\n"+
 		".boxselector, .boxfield, .boxidc {fill: #E0F7B7; stroke: #667733;}\n"+

@@ -11,6 +11,7 @@ public class SymbolElement extends AbstractSymbol{
 	private String namespace = null;
 	private String type = null;
 	private String cardinality = null;
+        private boolean optional = false;
 	private boolean nillable = false;
 	private boolean abstr = false;
 	private String substitution = null;
@@ -96,6 +97,9 @@ public class SymbolElement extends AbstractSymbol{
 	 */
 	public void setCardinality(String cardinality) {
 		this.cardinality = cardinality;
+                if (cardinality != null && cardinality.startsWith("0")) {
+                    this.optional = true;
+                }
 	}
 
 	/**
@@ -148,7 +152,12 @@ public class SymbolElement extends AbstractSymbol{
                 print("<a href=\"#\" onclick=\"window.parent.location.href = window.parent.location.href.split('#')[0]  + '#element_" +name+ "'\">");
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"'/>");
-		print("<rect class='boxelement' x='0' y='0' width='"+width+"' height='"+height+"'");
+                if (optional) {
+                    print("<rect class='boxelementoptional' x='0' y='0' width='"+width+"' height='"+height+"'");
+                } else {
+                    print("<rect class='boxelement' x='0' y='0' width='"+width+"' height='"+height+"'");
+                }
+                
 		drawMouseover();
 		if (namespace!=null) {
 			print("<text class='visible' x='5' y='13'>"+namespace+"</text>");
