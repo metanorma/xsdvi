@@ -42,7 +42,7 @@ public final class XsdVi {
 	private static String rootNodeName = null;
         private static boolean oneNodeOnly = false;
         private static String outputPath = null;
-       
+        
         /**
 	 * 
 	 */
@@ -209,6 +209,7 @@ public final class XsdVi {
                         } else {
                             elementsNames.add(rootNodeName);
                         }
+                        xsdHandler.setSchemaNamespace(model, elementsNames.get(0));
                         
                         for(String elementName: elementsNames) {
                             rootNodeName = elementName;
