@@ -203,7 +203,7 @@ public final class XsdVi {
 			logger.info("Parsing " + input + "...");
 			XSModel model = schemaLoader.loadURI(input);
 			logger.info("Processing XML Schema model...");
-                        List<String> elementsNames = null;
+                        List<String> elementsNames = new ArrayList<>();
                         if (rootNodeName.equals("all")) {
                             elementsNames = xsdHandler.getElementsNames(model);
                         } else {
@@ -252,6 +252,7 @@ public final class XsdVi {
                 String path = "";
                 if (outputPath != null) {
                     path = outputPath;
+                    
                 }
                 return Paths.get(path, filename).toString();
 	}
