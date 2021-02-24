@@ -1,5 +1,6 @@
 package xsdvi.svg;
 
+import java.util.ArrayList;
 import xsdvi.utils.WidthCalculator;
 
 /**
@@ -157,28 +158,43 @@ public class SymbolElement extends AbstractSymbol{
                 } else {
                     print("<rect class='boxelement' x='0' y='0' width='"+width+"' height='"+height+"'");
                 }
-                
-		drawMouseover();
+                // all items display, no need to mouseover event
+		//drawMouseover();
+                print("/>");
 		if (namespace!=null) {
 			print("<text class='visible' x='5' y='13'>"+namespace+"</text>");
 		}
-		if (substitution!=null) {
+		/*if (substitution!=null) {
 			print("<text class='hidden' visibility='hidden' x='5' y='13'>subst.: "+substitution+"</text>");
 			print("<text class='hidden' visibility='hidden' x='5' y='41'>nillable: "+(nillable ? "1" : "0")+", abstract: "+(abstr ? "1" : "0")+"</text>");
 		}
 		else {
 			print("<text class='hidden' visibility='hidden' x='5' y='13'>nillable: "+(nillable ? "1" : "0")+"</text>");
 			print("<text class='hidden' visibility='hidden' x='5' y='41'>abstract: "+(abstr ? "1" : "0")+"</text>");
-		}
+		}*/
 		if (name!=null) {
 			print("<text class='strong elementlink' x='5' y='27'>"+name+"</text>");
 		}
 		if (type!=null) {
 			print("<text class='visible' x='5' y='41'>"+type+"</text>");
 		}
+                
+                ArrayList<String> propertiesArray = new ArrayList<>();
 		if (cardinality!=null) {
-			print("<text x='5' y='59'>"+cardinality+"</text>");
-		}
+                    propertiesArray.add(cardinality);
+                }
+                if (substitution!=null) {
+                    propertiesArray.add("subst.: "+substitution);
+                }
+                if (nillable) {
+                    propertiesArray.add("nillable: true");
+                }
+                if (abstr) {
+                    propertiesArray.add("abstract: true");
+                }
+                String properties = String.join(", ", propertiesArray);
+                print("<text x='5' y='59'>"+properties+"</text>");
+		
 		drawConnection();
 		drawUse();
 		drawGEnd();

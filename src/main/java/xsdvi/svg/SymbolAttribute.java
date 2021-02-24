@@ -1,5 +1,6 @@
 package xsdvi.svg;
 
+import java.util.ArrayList;
 import xsdvi.utils.WidthCalculator;
 
 /**
@@ -119,7 +120,8 @@ public class SymbolAttribute extends AbstractSymbol {
 		else {
 			print("<rect class='boxattribute2' x='0' y='0' width='"+width+"' height='"+height+"' rx='9'");
 		}
-		drawMouseover();
+		//drawMouseover();
+                print("/>");
 		if (namespace!=null) {
 			print("<text class='visible' x='5' y='13'>"+namespace+"</text>");
 		}
@@ -132,7 +134,14 @@ public class SymbolAttribute extends AbstractSymbol {
 		if (type!=null) {
 			print("<text class='visible' x='5' y='41'>"+type+"</text>");
 		}
-		print("<text class='hidden' visibility='hidden' x='5' y='41'>use: "+(required ? "required" : "optional")+"</text>");
+                // commented, because redundant, 'use required: ...' identical to border style
+		//print("<text class='hidden' visibility='hidden' x='5' y='41'>use: "+(required ? "required" : "optional")+"</text>");
+                ArrayList<String> propertiesArray = new ArrayList<>();
+		if (constraint!=null) {
+                    propertiesArray.add(constraint);
+                }
+                String properties = String.join(", ", propertiesArray);
+                print("<text x='5' y='59'>"+properties+"</text>");
 		drawConnection();
 		drawGEnd();
 	}
@@ -173,7 +182,7 @@ public class SymbolAttribute extends AbstractSymbol {
 	@Override
 	public int getWidth() {
 		WidthCalculator calc = new WidthCalculator(MIN_WIDTH);
-		calc.newWidth(15, name, 2);
+		calc.newWidth(15, name, 3);
 		calc.newWidth(15, namespace);
 		calc.newWidth(15, type);
 		calc.newWidth(15, 13);
