@@ -29,10 +29,6 @@ jobs:
         run: |
           make all
 
-      - name: Compile output
-        run: |
-          make publish
-
 #      - name: Deploy to Maven
 #        env:
 #          # for deploy xsdvi
