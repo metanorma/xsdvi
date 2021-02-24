@@ -204,18 +204,8 @@ public final class XsdVi {
 			XSModel model = schemaLoader.loadURI(input);
 			logger.info("Processing XML Schema model...");
                         List<String> elementsNames = new ArrayList<>();
-                        if (rootNodeName.equals("all")) {
-                            elementsNames = xsdHandler.getElementsNames(model);
-                        } else {
-                            elementsNames.add(rootNodeName);
-                        }
-                        xsdHandler.setSchemaNamespace(model, elementsNames.get(0));
-                        
-                        for(String elementName: elementsNames) {
-                            rootNodeName = elementName;
+                        if (rootNodeName == null) {
                             String output = outputUrl(input);
-                            xsdHandler.setRootNodeName(rootNodeName);
-                            xsdHandler.setOneNodeOnly(oneNodeOnly);
                             xsdHandler.processModel(model);
                             logger.info("Drawing SVG " + output + "...");
                             writerHelper.newWriter(output);
@@ -224,6 +214,30 @@ public final class XsdVi {
                                 logger.info("Done.");
                             } else {
                                 logger.severe("SVG is empty!");
+                            }
+                        }
+                        else { // rootNodeName != null
+                            if (rootNodeName.equals("all")) {
+                                elementsNames = xsdHandler.getElementsNames(model);
+                            } else {
+                                elementsNames.add(rootNodeName);
+                            }
+                            xsdHandler.setSchemaNamespace(model, elementsNames.get(0));
+                        
+                            for(String elementName: elementsNames) {
+                                rootNodeName = elementName;
+                                String output = outputUrl(input);
+                                xsdHandler.setRootNodeName(rootNodeName);
+                                xsdHandler.setOneNodeOnly(oneNodeOnly);
+                                xsdHandler.processModel(model);
+                                logger.info("Drawing SVG " + output + "...");
+                                writerHelper.newWriter(output);
+                                if (builder.getRoot() != null) {
+                                    svg.draw((AbstractSymbol) builder.getRoot());
+                                    logger.info("Done.");
+                                } else {
+                                    logger.severe("SVG is empty!");
+                                }
                             }
                         }
 		}
