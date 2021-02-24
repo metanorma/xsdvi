@@ -13,6 +13,25 @@
         <jarname>${project.artifactId}-${project.version}.jar</jarname>
         <exec.mainClass>xsdvi.XsdVi</exec.mainClass>
     </properties>
+    <distributionManagement>
+   <repository>
+      <id>metanorma_xsdvi</id>
+      <name>GitHub Metanorma Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/metanorma/xsdvi</url>
+   </repository>
+    </distributionManagement>
+    <repositories>
+       <repository>
+         <id>central</id>
+         <url>https://repo1.maven.org/maven2</url>
+         <releases>
+            <enabled>true</enabled>
+         </releases>
+         <snapshots>
+            <enabled>true</enabled>
+         </snapshots>
+      </repository>
+    </repositories>
     <build>
         <plugins>
             <plugin>
