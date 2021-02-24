@@ -1,0 +1,99 @@
+# xsdvi
+
+image:https://github.com/metanorma/xsdvi/workflows/ubuntu/badge.svg["Build Status", link="https://github.com/metanorma/xsdvi/actions?workflow=ubuntu"]
+image:https://github.com/metanorma/xsdvi/workflows/macos/badge.svg["Build Status", link="https://github.com/metanorma/xsdvi/actions?workflow=macos"]
+image:https://github.com/metanorma/xsdvi/workflows/windows/badge.svg["Build Status", link="https://github.com/metanorma/xsdvi/actions?workflow=windows"]
+
+Fork of XsdVi tool - Java application serves to transform W3C XML Schema instances into interactive diagrams in SVG format.
+
+This repository is a fork of the original XsdVi source code.
+
+See original XsdVi SourceForge project page (https://sourceforge.net/projects/xsdvi/) and the XsdVi website (https://sourceforge.net/projects/xsdvi/) for more information on XsdVi.
+
+
+== Installing Build Tools
+
+You will need the `maven` build tool and `make`.
+
+* https://www.baeldung.com/install-maven-on-windows-linux-mac[How to install Maven on Windows, Linux, Mac]
+
+
+== Usage
+
+[source,sh]
+----
+java -jar target/xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] [-rootNodeName <name>] [-oneNodeOnly] [-outputPath <arg>]
+----
+
+e.g.:
+to render SVG for entire XSD with root element UnitsML:
+[source,sh]
+----
+java -jar target/xsdvi-1.0.jar UnitsML-v1.0-csd04.xsd -rootNodeName UnitsML
+----
+
+to render SVG for one element Quantity:
+[source,sh]
+----
+java -jar target/xsdvi-1.0.jar UnitsML-v1.0-csd04.xsd -rootNodeName Quantity -oneNodeOnly
+----
+
+to render separate SVGs for each element:
+[source,sh]
+----
+java -jar target/xsdvi-1.0.jar UnitsML-v1.0-csd04.xsd -rootNodeName all -oneNodeOnly -outputPath images/SVG
+----
+
+
+== Building the package
+
+[source,sh]
+----
+make all
+----
+
+
+== Releasing a new version
+
+Update version in `pom.xml`, e.g.:
+
+[source,xml]
+----
+<groupId>xsdvi</groupId>
+<artifactId>xsdvi</artifactId>
+<version>1.0</version>
+<name>XsdVi tool</name>
+----
+
+Build the package using instructions above, the package will be created at:
+`target/xsdvi-{version}.jar`
+
+Tag the same version in Git:
+
+[source,xml]
+----
+git tag v1.0
+git push origin v1.0
+----
+
+Then the corresponding GitHub release will be automatically created at:
+https://github.com/metanorma/xsdvi/releases
+
+And downloadable at:
+`https://github.com/metanorma/xsdvi/releases/download/v{version}/xsdvi-{version}.jar`
+
+
+== Testing
+
+The testing environment utilizes these tools:
+
+* `make`
+
+
+Running the tests:
+
+[source,sh]
+----
+make test
+----
+
