@@ -1,0 +1,7 @@
+<rect class='button' x='300' y='10' width='20' height='20' onclick='collapseAll()'/>
+<line x1='303' y1='20' x2='317' y2='20'/>
+<text x='330' y='20'>collapse all</text>
+<rect class='button' x='400' y='10' width='20' height='20' onclick='expandAll()'/>
+<line x1='403' y1='20' x2='417' y2='20'/>
+<line x1='410' y1='13' x2='410' y2='27'/>
+<text x='430' y='20'>expand all</text>
