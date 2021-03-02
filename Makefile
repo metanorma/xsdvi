@@ -11,6 +11,9 @@ all: target/$(JAR_FILE)
 target/$(JAR_FILE):
 	mvn --settings settings.xml -DskipTests clean package shade:shade
 
+test:
+	mvn --settings settings.xml test surefire-report:report
+
 deploy:
 	mvn --settings settings.xml -DskipTests clean deploy shade:shade
 

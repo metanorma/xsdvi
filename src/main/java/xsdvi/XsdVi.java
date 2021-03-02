@@ -1,7 +1,11 @@
 package xsdvi;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,11 +141,15 @@ public final class XsdVi {
         };
         
         static final String CMD_common_prefix =  "java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]]";
-        static final String CMD_common_suffix =  " [-" + ROOT_NODE_NAME + " <name>] -" + ONE_NODE_ONLY;
+        static final String CMD_common_suffix =  " [-" + ROOT_NODE_NAME + " <name>] [-" + ONE_NODE_ONLY + "] [-" + OUTPUT_PATH + " <arg>]";
         static final String CMD = CMD_common_prefix + CMD_common_suffix;
-        static final String CMD_EmbodyStyle = CMD_common_prefix + " -" + EMBODY_STYLE + CMD_common_suffix;
-        static final String CMD_GenerateStyle = CMD_common_prefix + " -" + GENERATE_STYLE + CMD_common_suffix;
-        static final String CMD_UseStyle = CMD_common_prefix + " -" + USE_STYLE + CMD_common_suffix;
+        static final String CMD_EmbodyStyle = CMD_common_prefix + " [-" + EMBODY_STYLE + "] " + CMD_common_suffix;
+        static final String CMD_GenerateStyle = CMD_common_prefix + " [-" + GENERATE_STYLE + " <arg>] " + CMD_common_suffix;
+        static final String CMD_UseStyle = CMD_common_prefix + " [-" + USE_STYLE + " <arg>] " + CMD_common_suffix;
+        
+        static final String INPUT_NOT_FOUND = "Error: %s file '%s' not found!";
+        
+        static final String XSD_INPUT = "XSD";
         
         static final String USAGE = getUsage();
         
@@ -172,7 +180,8 @@ public final class XsdVi {
 	 */
 	public static void main(String[] args) {
 		LoggerHelper.setupLogger();
-		
+		inputs.clear();
+                
 		parseArgs(args);
 		
 		XSLoader schemaLoader = getSchemaLoader();
@@ -198,6 +207,15 @@ public final class XsdVi {
 			logger.info("Done.");
 		}
 		
+                // check input file exists
+                for (String input : inputs) {
+                    File fXMLin = new File(input);
+                    if (!fXMLin.exists()) {
+                        System.out.println(String.format(INPUT_NOT_FOUND, XSD_INPUT, fXMLin));
+                        System.exit(ERROR_EXIT_CODE);
+                    }
+                }
+                
 		for (String input : inputs) {
                     
 			logger.info("Parsing " + input + "...");
@@ -267,9 +285,14 @@ public final class XsdVi {
                 String path = "";
                 if (outputPath != null) {
                     path = outputPath;
-                    
+                    try {
+                        Files.createDirectories(Paths.get(path, ""));
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
-                return Paths.get(path, filename).toString();
+                Path outputPath = Paths.get(path, filename);
+                return outputPath.toString();
 	}
 
 	/**
@@ -285,6 +308,7 @@ public final class XsdVi {
             
             try {
                 cmd = parser.parse(options, args);
+
                 style = EMBODY_STYLE;
                 
             } catch (ParseException exp) {
@@ -323,24 +347,36 @@ public final class XsdVi {
                 }
             }
 
+            if (!cmdFail) {
+                try {
+                    List<String> arglist = cmd.getArgList();
+                    if (arglist.isEmpty() || arglist.get(0).trim().length() == 0) {
+                        throw new ParseException("");
+                    }
+
+                    rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
+
+                    oneNodeOnly = cmd.hasOption(ONE_NODE_ONLY);
+                    
+                    if (rootNodeName != null && rootNodeName.equals("all")) {
+                        oneNodeOnly = true;
+                    }
+                    
+                    outputPath = cmd.getOptionValue(OUTPUT_PATH);
+
+                    inputs.addAll(cmd.getArgList());
+
+                    return;
+                } catch (ParseException exp) {
+                    cmdFail = true;
+                }
+            }
+            
             if (cmdFail) {
                 printUsage();
                 System.exit(ERROR_EXIT_CODE);
-            } else {
-                rootNodeName = cmd.getOptionValue(ROOT_NODE_NAME);
-                
-                oneNodeOnly = cmd.hasOption(ONE_NODE_ONLY);
-                
-                outputPath = cmd.getOptionValue(OUTPUT_PATH);
-                
-                inputs.addAll(cmd.getArgList());
-                
-                return;
             }
-            
-            
-            
-            
+
 		/*if (args.length < 1 || args[0].equalsIgnoreCase(EMBODY_STYLE) || args[0].equalsIgnoreCase(GENERATE_STYLE) || args[0].equalsIgnoreCase(USE_STYLE)) {
 			printUsage();
 			System.exit(1);

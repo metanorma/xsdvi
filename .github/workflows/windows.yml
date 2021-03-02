@@ -23,9 +23,9 @@ jobs:
       - name: Setup prerequisites
         run: choco install --no-progress make gnuwin32-coreutils.install
 
-#      - name: Run tests
-#        run: |
-#          make test SHELL=cmd
+      - name: Run tests
+        run: |
+          make test SHELL=cmd
 
       - name: Build
         run: |

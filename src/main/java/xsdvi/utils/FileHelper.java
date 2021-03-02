@@ -1,12 +1,12 @@
 package xsdvi.utils;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -62,4 +62,16 @@ public class FileHelper {
         return resultStringBuilder.toString();
     }
     
+    public void deleteFolder(Path path) {
+        if (Files.exists(path)) {
+            try {
+                Files.walk(path)
+                    .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                            .forEach(File::delete);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 }
