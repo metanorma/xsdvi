@@ -38,6 +38,7 @@ public final class LoggerHelper {
 	 */
 	public static void setupLogger(String uri) {
 		try {
+			System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$s] %5$s%6$s%n");
 			FileHandler fileHandler = new FileHandler(uri, true);
 			logger.addHandler(fileHandler);
 			logger.setLevel(Level.ALL);
