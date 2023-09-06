@@ -1,6 +1,8 @@
 package xsdvi.svg;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import xsdvi.utils.WidthCalculator;
 
 /**
@@ -16,6 +18,7 @@ public class SymbolElement extends AbstractSymbol{
 	private boolean nillable = false;
 	private boolean abstr = false;
 	private String substitution = null;
+	private List<String> description = new ArrayList<>();
 	
 	/**
 	 * @param name
@@ -144,7 +147,23 @@ public class SymbolElement extends AbstractSymbol{
 	public void setSubstitution(String substitution) {
 		this.substitution = substitution;
 	}
-	
+
+	/**
+	 *
+	 * @return
+	 */
+	public List<String> getDescription() {
+		return description;
+	}
+
+	/**
+	 *
+	 * @param description
+	 */
+	public void setDescription(List<String> description) {
+		this.description = description;
+	}
+
 	/* (non-Javadoc)
 	 * @see xsdvi.svg.AbstractSymbol#draw()
 	 */
@@ -181,20 +200,27 @@ public class SymbolElement extends AbstractSymbol{
                 
                 ArrayList<String> propertiesArray = new ArrayList<>();
 		if (cardinality!=null) {
-                    propertiesArray.add(cardinality);
-                }
-                if (substitution!=null) {
-                    propertiesArray.add("subst.: "+substitution);
-                }
-                if (nillable) {
-                    propertiesArray.add("nillable: true");
-                }
-                if (abstr) {
-                    propertiesArray.add("abstract: true");
-                }
-                String properties = String.join(", ", propertiesArray);
-                print("<text x='5' y='59'>"+properties+"</text>");
-		
+			propertiesArray.add(cardinality);
+		}
+		if (substitution!=null) {
+			propertiesArray.add("subst.: "+substitution);
+		}
+		if (nillable) {
+			propertiesArray.add("nillable: true");
+		}
+		if (abstr) {
+			propertiesArray.add("abstract: true");
+		}
+		String properties = String.join(", ", propertiesArray);
+		print("<text x='5' y='59'>"+properties+"</text>");
+
+		int y_shift = 14;
+		int y_start = 59;
+		for (String descriptionString: description) {
+			y_start = y_start + y_shift;
+			print("<text x='5' y='" + y_start + "'>"+descriptionString+"</text>");
+		}
+
 		drawConnection();
 		drawUse();
 		drawGEnd();
