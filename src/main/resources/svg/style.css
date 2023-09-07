@@ -25,3 +25,5 @@ line, polyline, polygon {fill: none; stroke: black;}
 .border {fill: #f9f9f9; stroke: #dddddd;}
 
 .elementlink {fill: blue;}
+
+.desc {fill: #888888;}

@@ -229,7 +229,7 @@ public class SymbolElement extends AbstractSymbol{
 		int y_start = 59;
 		for (String descriptionLine: descriptionStringArray) {
 			y_start = y_start + y_shift;
-			print("<text x='5' y='" + y_start + "'>"+descriptionLine+"</text>");
+			print("<text x='5' y='" + y_start + "' class='desc'>"+descriptionLine+"</text>");
 		}
 
 		drawConnection();
