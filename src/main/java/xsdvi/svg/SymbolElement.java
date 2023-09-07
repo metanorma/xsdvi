@@ -3,6 +3,7 @@ package xsdvi.svg;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.text.WordUtils;
 import xsdvi.utils.WidthCalculator;
 
 /**
@@ -216,9 +217,15 @@ public class SymbolElement extends AbstractSymbol{
 
 		int y_shift = 14;
 		int y_start = 59;
+		int wrapLength = (int)Math.round(width / 5.5);
 		for (String descriptionString: description) {
-			y_start = y_start + y_shift;
-			print("<text x='5' y='" + y_start + "'>"+descriptionString+"</text>");
+			// add line breaks into description string
+			String descriptionStringWithBreaks = WordUtils.wrap(descriptionString, wrapLength, "\n", true);
+			String[] descriptionStringArray = descriptionStringWithBreaks.split("\\R");
+			for (String descriptionLine: descriptionStringArray) {
+				y_start = y_start + y_shift;
+				print("<text x='5' y='" + y_start + "'>"+descriptionLine+"</text>");
+			}
 		}
 
 		drawConnection();
