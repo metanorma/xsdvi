@@ -17,6 +17,8 @@ public abstract class AbstractSymbol extends TreeElement {
 
     private static int highestYPosition;
 
+    protected int additionalHeight;
+
     /**
      * 
      */
@@ -145,7 +147,7 @@ public abstract class AbstractSymbol extends TreeElement {
      * 
      */
     protected void drawGStart() {
-            print("<g id='"+code()+"' class='box' transform='translate("+xPosition+","+yPosition+")'>");
+            print("<g id='"+code()+"' class='box' transform='translate("+xPosition+","+yPosition+")' data-desc-height='"+additionalHeight+"'>");
     }
 
     /**

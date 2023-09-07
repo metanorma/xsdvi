@@ -170,7 +170,18 @@ public class SymbolElement extends AbstractSymbol{
 	 */
 	@Override
 	public void draw() {
-                print("<a href=\"#\" onclick=\"window.parent.location.href = window.parent.location.href.split('#')[0]  + '#element_" +name+ "'\">");
+		print("<a href=\"#\" onclick=\"window.parent.location.href = window.parent.location.href.split('#')[0]  + '#element_" +name+ "'\">");
+
+		int y_shift = 14;
+		int wrapLength = (int)Math.round(width / 5.5);
+		String[] descriptionStringArray = new String[0];
+		for (String descriptionString: description) {
+			// add line breaks into description string
+			String descriptionStringWithBreaks = WordUtils.wrap(descriptionString, wrapLength, "\n", true);
+			descriptionStringArray = descriptionStringWithBreaks.split("\\R");
+			additionalHeight+=y_shift * descriptionStringArray.length;
+		}
+
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"'/>");
                 if (optional) {
@@ -215,17 +226,10 @@ public class SymbolElement extends AbstractSymbol{
 		String properties = String.join(", ", propertiesArray);
 		print("<text x='5' y='59'>"+properties+"</text>");
 
-		int y_shift = 14;
 		int y_start = 59;
-		int wrapLength = (int)Math.round(width / 5.5);
-		for (String descriptionString: description) {
-			// add line breaks into description string
-			String descriptionStringWithBreaks = WordUtils.wrap(descriptionString, wrapLength, "\n", true);
-			String[] descriptionStringArray = descriptionStringWithBreaks.split("\\R");
-			for (String descriptionLine: descriptionStringArray) {
-				y_start = y_start + y_shift;
-				print("<text x='5' y='" + y_start + "'>"+descriptionLine+"</text>");
-			}
+		for (String descriptionLine: descriptionStringArray) {
+			y_start = y_start + y_shift;
+			print("<text x='5' y='" + y_start + "'>"+descriptionLine+"</text>");
 		}
 
 		drawConnection();
