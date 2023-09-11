@@ -253,7 +253,7 @@ public abstract class AbstractSymbol extends TreeElement {
         }
 
         if (yPosition > prevYPosition && prevYPosition != 0) {
-            additionalHeightRest = height - additionalHeight;
+            additionalHeightRest = additionalHeightRest - height;
             if (additionalHeightRest < 0) {
                 additionalHeightRest = 0;
             }
