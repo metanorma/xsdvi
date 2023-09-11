@@ -1,6 +1,10 @@
 package xsdvi.svg;
 
+import org.apache.commons.text.WordUtils;
 import xsdvi.utils.TreeElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Václav Slavìtínský
@@ -17,6 +21,9 @@ public abstract class AbstractSymbol extends TreeElement {
 
     private static int highestYPosition;
 
+    protected String[] descriptionStringArray = new String[0];
+    protected int y_shift = 14;
+    private List<String> description = new ArrayList<>();
     protected int additionalHeight;
     protected static int additionalHeightRest;
     protected static int prevYPosition;
@@ -227,5 +234,38 @@ public abstract class AbstractSymbol extends TreeElement {
      * @return
      */
     public abstract int getHeight();
+
+    /**
+     *
+     * @param description
+     */
+    public void setDescription(List<String> description) {
+        this.description = description;
+    }
+
+    protected void processDescription(){
+        int wrapLength = (int)Math.round(width / 5.5);
+        for (String descriptionString: description) {
+            // add line breaks into description string
+            String descriptionStringWithBreaks = WordUtils.wrap(descriptionString, wrapLength, "\n", true);
+            descriptionStringArray = descriptionStringWithBreaks.split("\\R");
+            additionalHeight+=y_shift * descriptionStringArray.length;
+        }
+
+        if (yPosition > prevYPosition && prevYPosition != 0) {
+            additionalHeightRest = height - additionalHeight;
+            if (additionalHeightRest < 0) {
+                additionalHeightRest = 0;
+            }
+            if (additionalHeightRest < additionalHeight) {
+                additionalHeightRest = additionalHeight;
+            }
+        } else { // prevYPosition = yPosition
+            if (additionalHeight != 0) {
+                additionalHeightRest = additionalHeight;
+            }
+        }
+        prevYPosition = yPosition;
+    }
 
 }

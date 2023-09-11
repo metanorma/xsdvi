@@ -19,7 +19,6 @@ public class SymbolElement extends AbstractSymbol{
 	private boolean nillable = false;
 	private boolean abstr = false;
 	private String substitution = null;
-	private List<String> description = new ArrayList<>();
 	
 	/**
 	 * @param name
@@ -149,21 +148,6 @@ public class SymbolElement extends AbstractSymbol{
 		this.substitution = substitution;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	public List<String> getDescription() {
-		return description;
-	}
-
-	/**
-	 *
-	 * @param description
-	 */
-	public void setDescription(List<String> description) {
-		this.description = description;
-	}
 
 	/* (non-Javadoc)
 	 * @see xsdvi.svg.AbstractSymbol#draw()
@@ -172,21 +156,7 @@ public class SymbolElement extends AbstractSymbol{
 	public void draw() {
 		print("<a href=\"#\" onclick=\"window.parent.location.href = window.parent.location.href.split('#')[0]  + '#element_" +name+ "'\">");
 
-		int y_shift = 14;
-		int wrapLength = (int)Math.round(width / 5.5);
-		String[] descriptionStringArray = new String[0];
-		for (String descriptionString: description) {
-			// add line breaks into description string
-			String descriptionStringWithBreaks = WordUtils.wrap(descriptionString, wrapLength, "\n", true);
-			descriptionStringArray = descriptionStringWithBreaks.split("\\R");
-			additionalHeight+=y_shift * descriptionStringArray.length;
-		}
-
-		if (prevYPosition > yPosition) {
-			additionalHeightRest = additionalHeight - (yPosition + MAX_HEIGHT);
-		} else { // prevYPosition = yPosition
-			additionalHeightRest = additionalHeight;
-		}
+		processDescription();
 
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"'/>");

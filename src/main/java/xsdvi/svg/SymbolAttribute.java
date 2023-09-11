@@ -112,6 +112,7 @@ public class SymbolAttribute extends AbstractSymbol {
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"' rx='9'/>");
 		if (required) {
