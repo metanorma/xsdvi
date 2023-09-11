@@ -26,6 +26,7 @@ public abstract class AbstractSymbol extends TreeElement {
     private List<String> description = new ArrayList<>();
     protected int additionalHeight;
     protected static int additionalHeightRest;
+    protected static int prevXPosition;
     protected static int prevYPosition;
 
     /**
@@ -156,7 +157,7 @@ public abstract class AbstractSymbol extends TreeElement {
      * 
      */
     protected void drawGStart() {
-            print("<g id='"+code()+"' class='box' transform='translate("+xPosition+","+yPosition+")' data-desc-height='"+additionalHeight+"' data-desc-height-rest='" + additionalHeightRest + "'>");
+            print("<g id='"+code()+"' class='box' transform='translate("+xPosition+","+yPosition+")' data-desc-height='"+additionalHeight+"' data-desc-height-rest='" + additionalHeightRest + "' data-desc-x='" + prevXPosition +"'>");
     }
 
     /**
@@ -264,6 +265,9 @@ public abstract class AbstractSymbol extends TreeElement {
             if (additionalHeight != 0) {
                 additionalHeightRest = additionalHeight;
             }
+        }
+        if (!description.isEmpty()) {
+            prevXPosition = xPosition;
         }
         prevYPosition = yPosition;
     }
