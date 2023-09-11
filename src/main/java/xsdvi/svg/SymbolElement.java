@@ -182,6 +182,12 @@ public class SymbolElement extends AbstractSymbol{
 			additionalHeight+=y_shift * descriptionStringArray.length;
 		}
 
+		if (prevYPosition > yPosition) {
+			additionalHeightRest = additionalHeight - (yPosition + MAX_HEIGHT);
+		} else { // prevYPosition = yPosition
+			additionalHeightRest = additionalHeight;
+		}
+
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"'/>");
                 if (optional) {

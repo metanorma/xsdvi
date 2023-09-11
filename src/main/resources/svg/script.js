@@ -186,7 +186,7 @@
     if (!eBoxLast) return;
     if (isOnHigherLevel(eBoxLast, eBox)) {
       //setYTrans(eBox, yTrans(eBoxLast)+"+(AbstractSymbol.MAX_HEIGHT+AbstractSymbol.Y_INDENT)+");\n"+
-      var attDescHeight = eBoxLast.getAttribute('data-desc-height');
+      var attDescHeight = eBoxLast.getAttribute('data-desc-height-rest');
       var descHeight = Number(attDescHeight);
       var heightAddon = 0;
       if(descHeight) heightAddon = descHeight;
