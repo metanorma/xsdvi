@@ -191,7 +191,14 @@
       var attX = xTrans(eBox);
       var descHeight = Number(attDescHeight);
       var heightAddon = 0;
-      if(descHeight && attX === attDescX) heightAddon = descHeight;
+
+      var currWidth = eBox.getElementsByClassName("shadow")[0];
+      if (currWidth) {
+        currWidth = Number(currWidth.getAttribute("width"));
+      } else {
+        currWidth = 0;
+      }
+      if(descHeight && attDescX >= attX && attDescX < attX + currWidth) heightAddon = descHeight;
 
       setYTrans(eBox, yTrans(eBoxLast)+%HEIGHT_SUM%+heightAddon);
       var parent = getParent(eBox);
