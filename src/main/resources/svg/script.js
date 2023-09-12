@@ -198,7 +198,7 @@
       } else {
         currWidth = 0;
       }
-      if(descHeight && attDescX >= attX && attDescX < attX + currWidth) heightAddon = descHeight;
+      if(descHeight && ((attDescX >= attX && attDescX < attX + currWidth) || (attX < attDescX))) heightAddon = descHeight;
 
       setYTrans(eBox, yTrans(eBoxLast)+%HEIGHT_SUM%+heightAddon);
       var parent = getParent(eBox);
