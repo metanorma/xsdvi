@@ -143,6 +143,13 @@ public class SymbolAttribute extends AbstractSymbol {
                 }
                 String properties = String.join(", ", propertiesArray);
                 print("<text x='5' y='59'>"+properties+"</text>");
+
+		int y_start = 59;
+		for (String descriptionLine: descriptionStringArray) {
+			y_start = y_start + y_shift;
+			print("<text x='5' y='" + y_start + "' class='desc'>"+descriptionLine+"</text>");
+		}
+
 		drawConnection();
 		drawGEnd();
 	}

@@ -205,6 +205,7 @@ public class XsdHandler {
 		symbol.setType(getTypeString(attributeDeclaration.getTypeDefinition()));
 		symbol.setRequired(attributeUse.getRequired());
 		symbol.setConstraint(getConstraintString(attributeUse));
+		symbol.setDescription(getDocumentationString(attributeUse));
     	builder.appendChild(symbol);
 		builder.levelUp();
 	}
@@ -468,28 +469,36 @@ public class XsdHandler {
 		}
 	}
 
-	private List<String> getDocumentationString(XSElementDeclaration elementDeclaration) {
+	//private List<String> getDocumentationString(XSElementDeclaration elementDeclaration) {
+	private List<String> getDocumentationString(org.apache.xerces.xs.XSObject itemDeclaration) {
 		//XSAnnotation annotation = elementDeclaration.getAnnotation();
 		List<String> annotationsList = new ArrayList<>();
-		XSObjectList annotations = elementDeclaration.getAnnotations();
-		for (Object annotationObject: annotations) {
-			XSAnnotation annotation = (XSAnnotation) annotationObject;
-			String annotationString = annotation.getAnnotationString();
-			try {
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder dBuilder = factory.newDocumentBuilder();
-				ByteArrayInputStream input =  new ByteArrayInputStream(annotationString.getBytes("UTF-8"));
-				Document doc = dBuilder.parse(input);
-				XPath xPath =  XPathFactory.newInstance().newXPath();
-				String expression = "//*[local-name() = 'documentation']";
-				NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
-				for (int i = 0; i < nodeList.getLength(); i++) {
-					Node nNode = nodeList.item(i);
-					// Todo: split text string by element's width
-					annotationsList.add(nNode.getTextContent());
+		XSObjectList annotations = null;
+		if (itemDeclaration instanceof XSElementDeclaration) {
+			annotations = ((XSElementDeclaration) itemDeclaration).getAnnotations();
+		} else if (itemDeclaration instanceof XSAttributeUse) {
+			annotations = ((XSAttributeUse) itemDeclaration).getAnnotations();
+		}
+		if (annotations != null) {
+			for (Object annotationObject: annotations) {
+				XSAnnotation annotation = (XSAnnotation) annotationObject;
+				String annotationString = annotation.getAnnotationString();
+				try {
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder dBuilder = factory.newDocumentBuilder();
+					ByteArrayInputStream input =  new ByteArrayInputStream(annotationString.getBytes("UTF-8"));
+					Document doc = dBuilder.parse(input);
+					XPath xPath =  XPathFactory.newInstance().newXPath();
+					String expression = "//*[local-name() = 'documentation']";
+					NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
+					for (int i = 0; i < nodeList.getLength(); i++) {
+						Node nNode = nodeList.item(i);
+						// Todo: split text string by element's width
+						annotationsList.add(nNode.getTextContent());
+					}
+				} catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+					logger.severe("Can't retrieve the documentation: " + e.toString());
 				}
-			} catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
-				logger.severe("Can't retrieve the documentation: " + e.toString());
 			}
 		}
 		return annotationsList;
