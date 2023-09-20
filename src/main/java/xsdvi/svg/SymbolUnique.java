@@ -60,6 +60,7 @@ public class SymbolUnique extends AbstractSymbol {
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='boxidc' x='0' y='0' width='"+width+"' height='"+height+"' rx='9'/>");
 		if (namespace!=null) {
@@ -68,6 +69,7 @@ public class SymbolUnique extends AbstractSymbol {
 		if (name!=null) {
 			print("<text class='strong' x='5' y='27'><tspan class='big'>U </tspan>"+name+"</text>");
 		}
+		drawDescription(27);
 		drawConnection();
 		drawUse();
 		drawGEnd();

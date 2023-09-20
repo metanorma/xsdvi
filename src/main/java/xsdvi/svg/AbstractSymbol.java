@@ -3,7 +3,9 @@ package xsdvi.svg;
 import org.apache.commons.text.WordUtils;
 import xsdvi.utils.TreeElement;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -246,13 +248,15 @@ public abstract class AbstractSymbol extends TreeElement {
 
     protected void processDescription(){
         int wrapLength = (int)Math.round(width / 5.5);
+        List<String> stringsWithBreaks =new  ArrayList<>();
         for (String descriptionString: description) {
             // add line breaks into description string
             String descriptionStringWithBreaks = WordUtils.wrap(descriptionString, wrapLength, "\n", true);
             descriptionStringArray = descriptionStringWithBreaks.split("\\R");
-            additionalHeight+=y_shift * descriptionStringArray.length;
+            stringsWithBreaks.addAll(Arrays.asList(descriptionStringWithBreaks.split("\\R")));
+            additionalHeight+=y_shift * stringsWithBreaks.size(); //descriptionStringArray.length;
         }
-
+        descriptionStringArray = stringsWithBreaks.toArray(new String[0]);
         if (yPosition > prevYPosition && prevYPosition != 0) {
             additionalHeightRest = additionalHeightRest - height;
             if (additionalHeightRest < 0) {

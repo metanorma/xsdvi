@@ -43,6 +43,7 @@ public class SymbolSelector extends AbstractSymbol {
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='boxselector' x='0' y='8' width='"+width+"' height='"+height+"' rx='9'/>");
 		print("<circle cx='12' cy='17' r='3'/>");
@@ -52,6 +53,7 @@ public class SymbolSelector extends AbstractSymbol {
 		if (xpath!=null) {
 			print("<text x='25' y='27'>"+xpath+"</text>");
 		}
+		drawDescription(27);
 		drawConnection();
 		drawGEnd();
 	}

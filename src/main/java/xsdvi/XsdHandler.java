@@ -318,6 +318,7 @@ public class XsdHandler {
 		int category = identityConstraintDefinition.getCategory();
 		if (category == XSIDCDefinition.IC_UNIQUE) {
 			symbol = new SymbolUnique();
+			symbol.setDescription(getDocumentationString(identityConstraintDefinition));
 			((SymbolUnique) symbol).setName(identityConstraintDefinition.getName());
                         String ns = identityConstraintDefinition.getNamespace();
                         if (ns != null && !ns.equals(schemaNamespace)) {
@@ -482,6 +483,8 @@ public class XsdHandler {
 			annotations = ((XSAttributeUse) itemDeclaration).getAnnotations();
 		} else if (itemDeclaration instanceof XSModelGroup) {
 			annotations = ((XSModelGroup) itemDeclaration).getAnnotations();
+		} else if (itemDeclaration instanceof XSIDCDefinition) {
+			annotations = ((XSIDCDefinition) itemDeclaration).getAnnotations();
 		}
 		if (annotations != null) {
 			for (Object annotationObject: annotations) {

@@ -242,7 +242,7 @@ public class SymbolElement extends AbstractSymbol{
 		drawUse();
 		drawGEnd();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see xsdvi.svg.AbstractSymbol#getWidth()
 	 */
