@@ -272,4 +272,11 @@ public abstract class AbstractSymbol extends TreeElement {
         prevYPosition = yPosition;
     }
 
+    protected void drawDescription(int y_start) {
+        for (String descriptionLine: descriptionStringArray) {
+            y_start = y_start + y_shift;
+            print("<text x='5' y='" + y_start + "' class='desc'>"+descriptionLine+"</text>");
+        }
+    }
+
 }
