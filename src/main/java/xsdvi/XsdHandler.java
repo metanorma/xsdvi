@@ -170,12 +170,14 @@ public class XsdHandler {
 		int compositor = modelGroup.getCompositor();
 		if (compositor == XSModelGroup.COMPOSITOR_ALL) {
 			symbol = new SymbolAll(cardinality);
+			symbol.setDescription(getDocumentationString(modelGroup));
 		}
 		else if (compositor == XSModelGroup.COMPOSITOR_CHOICE) {
 			symbol = new SymbolChoice(cardinality);
 		}
 		else if (compositor == XSModelGroup.COMPOSITOR_SEQUENCE) {
 			symbol = new SymbolSequence(cardinality);
+			symbol.setDescription(getDocumentationString(modelGroup));
 		}
     	builder.appendChild(symbol);
 		processParticles(modelGroup.getParticles());
@@ -478,6 +480,8 @@ public class XsdHandler {
 			annotations = ((XSElementDeclaration) itemDeclaration).getAnnotations();
 		} else if (itemDeclaration instanceof XSAttributeUse) {
 			annotations = ((XSAttributeUse) itemDeclaration).getAnnotations();
+		} else if (itemDeclaration instanceof XSModelGroup) {
+			annotations = ((XSModelGroup) itemDeclaration).getAnnotations();
 		}
 		if (annotations != null) {
 			for (Object annotationObject: annotations) {
