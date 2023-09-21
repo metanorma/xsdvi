@@ -137,10 +137,11 @@ public class XsdHandler {
 	 */
 	private void processElementWildcard(XSWildcard wildcard, String cardinality) {
 		SymbolAny symbol = new SymbolAny();
-                String ns = getNamespaceString(wildcard);
-                if (ns != null && !ns.equals(schemaNamespace)) {
-                    symbol.setNamespace(ns);
-                }
+		String ns = getNamespaceString(wildcard);
+		if (ns != null && !ns.equals(schemaNamespace)) {
+			symbol.setNamespace(ns);
+		}
+		symbol.setDescription(getDocumentationString(wildcard));
 		symbol.setProcessContents(getProcessContents(wildcard));
 		symbol.setCardinality(cardinality);
     	builder.appendChild(symbol);
@@ -152,10 +153,11 @@ public class XsdHandler {
 	 */
 	private void processAttributeWildcard(XSWildcard wildcard) {
 		SymbolAnyAttribute symbol = new SymbolAnyAttribute();
-                String ns = getNamespaceString(wildcard);
-                if (ns != null && !ns.equals(schemaNamespace)) {
-                    symbol.setNamespace(ns);
-                }
+		String ns = getNamespaceString(wildcard);
+		if (ns != null && !ns.equals(schemaNamespace)) {
+			symbol.setNamespace(ns);
+		}
+		symbol.setDescription(getDocumentationString(wildcard));
 		symbol.setProcessContents(getProcessContents(wildcard));
     	builder.appendChild(symbol);
 		builder.levelUp();
@@ -174,6 +176,7 @@ public class XsdHandler {
 		}
 		else if (compositor == XSModelGroup.COMPOSITOR_CHOICE) {
 			symbol = new SymbolChoice(cardinality);
+			symbol.setDescription(getDocumentationString(modelGroup));
 		}
 		else if (compositor == XSModelGroup.COMPOSITOR_SEQUENCE) {
 			symbol = new SymbolSequence(cardinality);
@@ -327,6 +330,7 @@ public class XsdHandler {
 		}
 		else if (category == XSIDCDefinition.IC_KEY) {
 			symbol = new SymbolKey();
+			symbol.setDescription(getDocumentationString(identityConstraintDefinition));
 			((SymbolKey) symbol).setName(identityConstraintDefinition.getName());
                         String ns = identityConstraintDefinition.getNamespace();
                         if (ns != null && !ns.equals(schemaNamespace)) {
@@ -335,6 +339,7 @@ public class XsdHandler {
 		}
 		else if (category == XSIDCDefinition.IC_KEYREF) {
 			symbol = new SymbolKeyref();
+			symbol.setDescription(getDocumentationString(identityConstraintDefinition));
 			((SymbolKeyref) symbol).setName(identityConstraintDefinition.getName());
                         String ns = identityConstraintDefinition.getNamespace();
                         if (ns != null && !ns.equals(schemaNamespace)) {
@@ -485,7 +490,10 @@ public class XsdHandler {
 			annotations = ((XSModelGroup) itemDeclaration).getAnnotations();
 		} else if (itemDeclaration instanceof XSIDCDefinition) {
 			annotations = ((XSIDCDefinition) itemDeclaration).getAnnotations();
+		} else if (itemDeclaration instanceof XSWildcard) {
+			annotations = ((XSWildcard) itemDeclaration).getAnnotations();
 		}
+
 		if (annotations != null) {
 			for (Object annotationObject: annotations) {
 				XSAnnotation annotation = (XSAnnotation) annotationObject;

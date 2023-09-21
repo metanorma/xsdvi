@@ -60,6 +60,7 @@ public class SymbolAnyAttribute extends AbstractSymbol{
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"' rx='9'/>");
 		print("<rect class='boxanyattribute' x='0' y='0' width='"+width+"' height='"+height+"' rx='9'/>");
@@ -77,6 +78,7 @@ public class SymbolAnyAttribute extends AbstractSymbol{
 			print("<text x='5' y='13'>"+namespace+"</text>");
 		}
 		print("<text class='strong' x='5' y='27'>@</text>");
+		drawDescription(34);
 		drawConnection();
 		drawGEnd();
 	}

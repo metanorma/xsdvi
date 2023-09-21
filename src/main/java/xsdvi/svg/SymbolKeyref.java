@@ -77,6 +77,7 @@ public class SymbolKeyref extends AbstractSymbol {
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='boxidc' x='0' y='0' width='"+width+"' height='"+height+"' rx='9'/>");
 		print("<circle class='empty' cx='9' cy='8' r='3'/>");
@@ -94,6 +95,7 @@ public class SymbolKeyref extends AbstractSymbol {
 		if (refer!=null) {
 			print("<text x='20' y='41'>"+refer+"</text>");
 		}
+		drawDescription(45);
 		drawConnection();
 		drawUse();
 		drawGEnd();

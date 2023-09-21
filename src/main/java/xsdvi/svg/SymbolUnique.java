@@ -69,7 +69,7 @@ public class SymbolUnique extends AbstractSymbol {
 		if (name!=null) {
 			print("<text class='strong' x='5' y='27'><tspan class='big'>U </tspan>"+name+"</text>");
 		}
-		drawDescription(27);
+		drawDescription(45);
 		drawConnection();
 		drawUse();
 		drawGEnd();
