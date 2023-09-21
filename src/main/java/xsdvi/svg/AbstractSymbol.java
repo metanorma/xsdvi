@@ -1,6 +1,12 @@
 package xsdvi.svg;
 
+import org.apache.commons.text.WordUtils;
 import xsdvi.utils.TreeElement;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Václav Slavìtínský
@@ -16,6 +22,14 @@ public abstract class AbstractSymbol extends TreeElement {
     protected int startYPosition = 50;
 
     private static int highestYPosition;
+
+    protected String[] descriptionStringArray = new String[0];
+    protected int y_shift = 14;
+    private List<String> description = new ArrayList<>();
+    protected int additionalHeight;
+    protected static int additionalHeightRest;
+    protected static int prevXPosition;
+    protected static int prevYPosition;
 
     /**
      * 
@@ -145,7 +159,7 @@ public abstract class AbstractSymbol extends TreeElement {
      * 
      */
     protected void drawGStart() {
-            print("<g id='"+code()+"' class='box' transform='translate("+xPosition+","+yPosition+")'>");
+            print("<g id='"+code()+"' class='box' transform='translate("+xPosition+","+yPosition+")' data-desc-height='"+additionalHeight+"' data-desc-height-rest='" + additionalHeightRest + "' data-desc-x='" + prevXPosition +"'>");
     }
 
     /**
@@ -223,5 +237,50 @@ public abstract class AbstractSymbol extends TreeElement {
      * @return
      */
     public abstract int getHeight();
+
+    /**
+     *
+     * @param description
+     */
+    public void setDescription(List<String> description) {
+        this.description = description;
+    }
+
+    protected void processDescription(){
+        int wrapLength = (int)Math.round(width / 5.5);
+        List<String> stringsWithBreaks =new  ArrayList<>();
+        for (String descriptionString: description) {
+            // add line breaks into description string
+            String descriptionStringWithBreaks = WordUtils.wrap(descriptionString, wrapLength, "\n", true);
+            descriptionStringArray = descriptionStringWithBreaks.split("\\R");
+            stringsWithBreaks.addAll(Arrays.asList(descriptionStringWithBreaks.split("\\R")));
+            additionalHeight+=y_shift * stringsWithBreaks.size(); //descriptionStringArray.length;
+        }
+        descriptionStringArray = stringsWithBreaks.toArray(new String[0]);
+        if (yPosition > prevYPosition && prevYPosition != 0) {
+            additionalHeightRest = additionalHeightRest - height;
+            if (additionalHeightRest < 0) {
+                additionalHeightRest = 0;
+            }
+            if (additionalHeightRest < additionalHeight) {
+                additionalHeightRest = additionalHeight;
+            }
+        } else { // prevYPosition = yPosition
+            if (additionalHeight != 0) {
+                additionalHeightRest = additionalHeight;
+            }
+        }
+        if (!description.isEmpty()) {
+            prevXPosition = xPosition;
+        }
+        prevYPosition = yPosition;
+    }
+
+    protected void drawDescription(int y_start) {
+        for (String descriptionLine: descriptionStringArray) {
+            y_start = y_start + y_shift;
+            print("<text x='5' y='" + y_start + "' class='desc'>"+descriptionLine+"</text>");
+        }
+    }
 
 }

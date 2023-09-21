@@ -60,6 +60,7 @@ public class SymbolKey extends AbstractSymbol {
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='boxidc' x='0' y='0' width='"+width+"' height='"+height+"' rx='9'/>");
 		print("<circle class='empty' cx='9' cy='8' r='3'/>");
@@ -72,6 +73,7 @@ public class SymbolKey extends AbstractSymbol {
 		if (name!=null) {
 			print("<text class='strong' x='20' y='27'>"+name+"</text>");
 		}
+		drawDescription(45);
 		drawConnection();
 		drawUse();
 		drawGEnd();

@@ -1,6 +1,9 @@
 package xsdvi.svg;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.text.WordUtils;
 import xsdvi.utils.WidthCalculator;
 
 /**
@@ -144,13 +147,17 @@ public class SymbolElement extends AbstractSymbol{
 	public void setSubstitution(String substitution) {
 		this.substitution = substitution;
 	}
-	
+
+
 	/* (non-Javadoc)
 	 * @see xsdvi.svg.AbstractSymbol#draw()
 	 */
 	@Override
 	public void draw() {
-                print("<a href=\"#\" onclick=\"window.parent.location.href = window.parent.location.href.split('#')[0]  + '#element_" +name+ "'\">");
+		print("<a href=\"#\" onclick=\"window.parent.location.href = window.parent.location.href.split('#')[0]  + '#element_" +name+ "'\">");
+
+		processDescription();
+
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"'/>");
                 if (optional) {
@@ -181,20 +188,22 @@ public class SymbolElement extends AbstractSymbol{
                 
                 ArrayList<String> propertiesArray = new ArrayList<>();
 		if (cardinality!=null) {
-                    propertiesArray.add(cardinality);
-                }
-                if (substitution!=null) {
-                    propertiesArray.add("subst.: "+substitution);
-                }
-                if (nillable) {
-                    propertiesArray.add("nillable: true");
-                }
-                if (abstr) {
-                    propertiesArray.add("abstract: true");
-                }
-                String properties = String.join(", ", propertiesArray);
-                print("<text x='5' y='59'>"+properties+"</text>");
-		
+			propertiesArray.add(cardinality);
+		}
+		if (substitution!=null) {
+			propertiesArray.add("subst.: "+substitution);
+		}
+		if (nillable) {
+			propertiesArray.add("nillable: true");
+		}
+		if (abstr) {
+			propertiesArray.add("abstract: true");
+		}
+		String properties = String.join(", ", propertiesArray);
+		print("<text x='5' y='59'>"+properties+"</text>");
+
+		drawDescription(59);
+
 		drawConnection();
 		drawUse();
 		drawGEnd();
@@ -233,7 +242,7 @@ public class SymbolElement extends AbstractSymbol{
 		drawUse();
 		drawGEnd();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see xsdvi.svg.AbstractSymbol#getWidth()
 	 */

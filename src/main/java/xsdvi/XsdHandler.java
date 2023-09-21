@@ -1,18 +1,35 @@
 package xsdvi;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 import org.apache.xerces.xs.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import xsdvi.svg.*;
+import xsdvi.utils.LoggerHelper;
 import xsdvi.utils.TreeBuilder;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 /**
  * @author Václav Slavìtínský
  *
  */
 public class XsdHandler {
+	private static final Logger logger = Logger.getLogger(LoggerHelper.LOGGER_NAME);
 	private TreeBuilder builder;
 	private Stack<XSElementDeclaration> stack;
 	
@@ -120,10 +137,11 @@ public class XsdHandler {
 	 */
 	private void processElementWildcard(XSWildcard wildcard, String cardinality) {
 		SymbolAny symbol = new SymbolAny();
-                String ns = getNamespaceString(wildcard);
-                if (ns != null && !ns.equals(schemaNamespace)) {
-                    symbol.setNamespace(ns);
-                }
+		String ns = getNamespaceString(wildcard);
+		if (ns != null && !ns.equals(schemaNamespace)) {
+			symbol.setNamespace(ns);
+		}
+		symbol.setDescription(getDocumentationString(wildcard));
 		symbol.setProcessContents(getProcessContents(wildcard));
 		symbol.setCardinality(cardinality);
     	builder.appendChild(symbol);
@@ -135,10 +153,11 @@ public class XsdHandler {
 	 */
 	private void processAttributeWildcard(XSWildcard wildcard) {
 		SymbolAnyAttribute symbol = new SymbolAnyAttribute();
-                String ns = getNamespaceString(wildcard);
-                if (ns != null && !ns.equals(schemaNamespace)) {
-                    symbol.setNamespace(ns);
-                }
+		String ns = getNamespaceString(wildcard);
+		if (ns != null && !ns.equals(schemaNamespace)) {
+			symbol.setNamespace(ns);
+		}
+		symbol.setDescription(getDocumentationString(wildcard));
 		symbol.setProcessContents(getProcessContents(wildcard));
     	builder.appendChild(symbol);
 		builder.levelUp();
@@ -153,12 +172,15 @@ public class XsdHandler {
 		int compositor = modelGroup.getCompositor();
 		if (compositor == XSModelGroup.COMPOSITOR_ALL) {
 			symbol = new SymbolAll(cardinality);
+			symbol.setDescription(getDocumentationString(modelGroup));
 		}
 		else if (compositor == XSModelGroup.COMPOSITOR_CHOICE) {
 			symbol = new SymbolChoice(cardinality);
+			symbol.setDescription(getDocumentationString(modelGroup));
 		}
 		else if (compositor == XSModelGroup.COMPOSITOR_SEQUENCE) {
 			symbol = new SymbolSequence(cardinality);
+			symbol.setDescription(getDocumentationString(modelGroup));
 		}
     	builder.appendChild(symbol);
 		processParticles(modelGroup.getParticles());
@@ -188,6 +210,7 @@ public class XsdHandler {
 		symbol.setType(getTypeString(attributeDeclaration.getTypeDefinition()));
 		symbol.setRequired(attributeUse.getRequired());
 		symbol.setConstraint(getConstraintString(attributeUse));
+		symbol.setDescription(getDocumentationString(attributeUse));
     	builder.appendChild(symbol);
 		builder.levelUp();
 	}
@@ -210,14 +233,15 @@ public class XsdHandler {
 		symbol.setNillable(elementDeclaration.getNillable());
 		symbol.setAbstr(elementDeclaration.getAbstract());
 		symbol.setSubstitution(getSubstitutionString(elementDeclaration));
-                if (isRoot && oneNodeOnly) { // without Collapse All and Expand All buttons
-                    symbol.setStartYPosition(20); //default 50
-                }
-                if (isRoot) {
-                    builder.setRoot(symbol);
-                } else {
-                    builder.appendChild(symbol);
-                }
+		symbol.setDescription(getDocumentationString(elementDeclaration));
+		if (isRoot && oneNodeOnly) { // without Collapse All and Expand All buttons
+			symbol.setStartYPosition(20); //default 50
+		}
+		if (isRoot) {
+			builder.setRoot(symbol);
+		} else {
+			builder.appendChild(symbol);
+		}
 		//LOOP
 		if (processLoop(elementDeclaration)) {
 			builder.levelUp();
@@ -297,6 +321,7 @@ public class XsdHandler {
 		int category = identityConstraintDefinition.getCategory();
 		if (category == XSIDCDefinition.IC_UNIQUE) {
 			symbol = new SymbolUnique();
+			symbol.setDescription(getDocumentationString(identityConstraintDefinition));
 			((SymbolUnique) symbol).setName(identityConstraintDefinition.getName());
                         String ns = identityConstraintDefinition.getNamespace();
                         if (ns != null && !ns.equals(schemaNamespace)) {
@@ -305,6 +330,7 @@ public class XsdHandler {
 		}
 		else if (category == XSIDCDefinition.IC_KEY) {
 			symbol = new SymbolKey();
+			symbol.setDescription(getDocumentationString(identityConstraintDefinition));
 			((SymbolKey) symbol).setName(identityConstraintDefinition.getName());
                         String ns = identityConstraintDefinition.getNamespace();
                         if (ns != null && !ns.equals(schemaNamespace)) {
@@ -313,6 +339,7 @@ public class XsdHandler {
 		}
 		else if (category == XSIDCDefinition.IC_KEYREF) {
 			symbol = new SymbolKeyref();
+			symbol.setDescription(getDocumentationString(identityConstraintDefinition));
 			((SymbolKeyref) symbol).setName(identityConstraintDefinition.getName());
                         String ns = identityConstraintDefinition.getNamespace();
                         if (ns != null && !ns.equals(schemaNamespace)) {
@@ -448,5 +475,47 @@ public class XsdHandler {
 			default:
 				return AbstractSymbol.PC_STRICT;
 		}
+	}
+
+	//private List<String> getDocumentationString(XSElementDeclaration elementDeclaration) {
+	private List<String> getDocumentationString(org.apache.xerces.xs.XSObject itemDeclaration) {
+		//XSAnnotation annotation = elementDeclaration.getAnnotation();
+		List<String> annotationsList = new ArrayList<>();
+		XSObjectList annotations = null;
+		if (itemDeclaration instanceof XSElementDeclaration) {
+			annotations = ((XSElementDeclaration) itemDeclaration).getAnnotations();
+		} else if (itemDeclaration instanceof XSAttributeUse) {
+			annotations = ((XSAttributeUse) itemDeclaration).getAnnotations();
+		} else if (itemDeclaration instanceof XSModelGroup) {
+			annotations = ((XSModelGroup) itemDeclaration).getAnnotations();
+		} else if (itemDeclaration instanceof XSIDCDefinition) {
+			annotations = ((XSIDCDefinition) itemDeclaration).getAnnotations();
+		} else if (itemDeclaration instanceof XSWildcard) {
+			annotations = ((XSWildcard) itemDeclaration).getAnnotations();
+		}
+
+		if (annotations != null) {
+			for (Object annotationObject: annotations) {
+				XSAnnotation annotation = (XSAnnotation) annotationObject;
+				String annotationString = annotation.getAnnotationString();
+				try {
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder dBuilder = factory.newDocumentBuilder();
+					ByteArrayInputStream input =  new ByteArrayInputStream(annotationString.getBytes("UTF-8"));
+					Document doc = dBuilder.parse(input);
+					XPath xPath =  XPathFactory.newInstance().newXPath();
+					String expression = "//*[local-name() = 'documentation']";
+					NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
+					for (int i = 0; i < nodeList.getLength(); i++) {
+						Node nNode = nodeList.item(i);
+						// Todo: split text string by element's width
+						annotationsList.add(nNode.getTextContent());
+					}
+				} catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+					logger.severe("Can't retrieve the documentation: " + e.toString());
+				}
+			}
+		}
+		return annotationsList;
 	}
 }

@@ -43,6 +43,7 @@ public class SymbolField extends AbstractSymbol {
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='boxfield' x='0' y='8' width='"+width+"' height='"+height+"' rx='9'/>");
 		print("<rect class='empty' x='6' y='17' width='12' height='12'/>");
@@ -50,6 +51,7 @@ public class SymbolField extends AbstractSymbol {
 		if (xpath!=null) {
 			print("<text x='25' y='27'>"+xpath+"</text>");
 		}
+		drawDescription(27);
 		drawConnection();
 		drawGEnd();
 	}

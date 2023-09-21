@@ -77,6 +77,7 @@ public class SymbolAny extends AbstractSymbol{
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='shadow' x='3' y='3' width='"+width+"' height='"+height+"'/>");
 		print("<rect class='boxany' x='0' y='0' width='"+width+"' height='"+height+"'/>");
@@ -97,6 +98,7 @@ public class SymbolAny extends AbstractSymbol{
 		if (cardinality!=null) {
 			print("<text x='5' y='59'>"+cardinality+"</text>");
 		}
+		drawDescription(59);
 		drawConnection();
 		drawGEnd();
 	}

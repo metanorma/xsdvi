@@ -43,6 +43,7 @@ public class SymbolChoice extends AbstractSymbol {
 	 */
 	@Override
 	public void draw() {
+		processDescription();
 		drawGStart();
 		print("<rect class='boxcompositor' x='0' y='8' width='"+width+"' height='"+height+"' rx='9'/>");
 		print("<circle cx='"+(width/2+12)+"' cy='14' r='2'/>");
@@ -52,6 +53,7 @@ public class SymbolChoice extends AbstractSymbol {
 		if (cardinality!=null) {
 			print("<text x='5' y='52'>"+cardinality+"</text>");
 		}
+		drawDescription(52);
 		drawConnection();
 		drawUse();
 		drawGEnd();

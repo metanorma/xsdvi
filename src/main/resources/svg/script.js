@@ -186,7 +186,21 @@
     if (!eBoxLast) return;
     if (isOnHigherLevel(eBoxLast, eBox)) {
       //setYTrans(eBox, yTrans(eBoxLast)+"+(AbstractSymbol.MAX_HEIGHT+AbstractSymbol.Y_INDENT)+");\n"+
-      setYTrans(eBox, yTrans(eBoxLast)+%HEIGHT_SUM%);
+      var attDescHeight = eBoxLast.getAttribute('data-desc-height-rest');
+      var attDescX = Number(eBoxLast.getAttribute('data-desc-x'));
+      var attX = xTrans(eBox);
+      var descHeight = Number(attDescHeight);
+      var heightAddon = 0;
+
+      var currWidth = eBox.getElementsByClassName("shadow")[0];
+      if (currWidth) {
+        currWidth = Number(currWidth.getAttribute("width"));
+      } else {
+        currWidth = 0;
+      }
+      if(descHeight && ((attDescX >= attX && attDescX < attX + currWidth) || (attX < attDescX))) heightAddon = descHeight;
+
+      setYTrans(eBox, yTrans(eBoxLast)+%HEIGHT_SUM%+heightAddon);
       var parent = getParent(eBox);
       var line = document.getElementById('p'+eBox.id);
       if (!parent || !line) return;
