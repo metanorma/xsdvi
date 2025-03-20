@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.xerces.xs.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -509,7 +510,12 @@ public class XsdHandler {
 					for (int i = 0; i < nodeList.getLength(); i++) {
 						Node nNode = nodeList.item(i);
 						// Todo: split text string by element's width
-						annotationsList.add(nNode.getTextContent());
+						//annotationsList.add(nNode.getTextContent());
+						// fix for https://github.com/metanorma/xsdvi/issues/9
+						//annotationsList.add(StringEscapeUtils.escapeXml10((nNode.getTextContent())));
+						annotationsList.add(nNode.getTextContent()
+								.replace("<","&lt;")
+								.replace(">","&gt;"));
 					}
 				} catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
 					logger.severe("Can't retrieve the documentation: " + e.toString());
