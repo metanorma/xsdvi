@@ -279,7 +279,11 @@ public abstract class AbstractSymbol extends TreeElement {
     protected void drawDescription(int y_start) {
         for (String descriptionLine: descriptionStringArray) {
             y_start = y_start + y_shift;
-            print("<text x='5' y='" + y_start + "' class='desc'>"+descriptionLine+"</text>");
+
+            // replace < and > to fix https://github.com/metanorma/xsdvi/issues/9
+            print("<text x='5' y='" + y_start + "' class='desc'>"+descriptionLine
+                    .replace("<","&lt;")
+                    .replace(">","&gt;")+"</text>");
         }
     }
 

@@ -29,19 +29,19 @@ e.g.:
 to render SVG for entire XSD with root element UnitsML:
 [source,sh]
 ----
-java -jar target/xsdvi-1.2.jar UnitsML-v1.2-csd04.xsd -rootNodeName UnitsML
+java -jar target/xsdvi-1.3.jar UnitsML-v1.3-csd04.xsd -rootNodeName UnitsML
 ----
 
 to render SVG for one element Quantity:
 [source,sh]
 ----
-java -jar target/xsdvi-1.2.jar UnitsML-v1.2-csd04.xsd -rootNodeName Quantity -oneNodeOnly
+java -jar target/xsdvi-1.3.jar UnitsML-v1.3-csd04.xsd -rootNodeName Quantity -oneNodeOnly
 ----
 
 to render separate SVGs for each element:
 [source,sh]
 ----
-java -jar target/xsdvi-1.2.jar UnitsML-v1.2-csd04.xsd -rootNodeName all -oneNodeOnly -outputPath images/SVG
+java -jar target/xsdvi-1.3.jar UnitsML-v1.3-csd04.xsd -rootNodeName all -oneNodeOnly -outputPath images/SVG
 ----
 
 
@@ -61,7 +61,7 @@ Update version in `pom.xml`, e.g.:
 ----
 <groupId>xsdvi</groupId>
 <artifactId>xsdvi</artifactId>
-<version>1.2</version>
+<version>1.3</version>
 <name>XsdVi tool</name>
 ----
 
@@ -72,8 +72,8 @@ Tag the same version in Git:
 
 [source,xml]
 ----
-git tag v1.2
-git push origin v1.2
+git tag v1.3
+git push origin v1.3
 ----
 
 Then the corresponding GitHub release will be automatically created at:
