@@ -167,5 +167,6 @@ public class xsdviTests {
         String svgContent = String.join("", Files.readAllLines(fileout));
         assertTrue(svgContent.contains("See &lt;a"));
         assertTrue(svgContent.contains("&gt;KB2105352&lt;/a&gt;"));
+        assertTrue(svgContent.contains("&gt;KB 2105352&lt;/a&gt;"));
     }
 }

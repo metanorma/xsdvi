@@ -5,6 +5,7 @@
                         <xsd:annotation>
                             <xsd:documentation xml:lang="en">Test XML entities.
 See &lt;a href="http://kb.vmware.com/kb/2105352"&gt;KB2105352&lt;/a&gt;.
+See &lt;a href="http://kb.vmware.com/kb/2105352"&gt;KB 2105352&lt;/a&gt;.
                             </xsd:documentation>
                             <xsd:documentation source="required">false</xsd:documentation>
                         </xsd:annotation>
