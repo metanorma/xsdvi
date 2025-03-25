@@ -143,4 +143,29 @@ public class xsdviTests {
         }
         assertTrue(countFiles == 54);
     }
+
+    @Test
+    public void successProcessXMLEntitiesInDocumentationTag() throws ParseException, IOException {
+        System.out.println(name.getMethodName());
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        String xsdFileTest5 = "TestXMLEntities.xsd";
+        String xsd = classLoader.getResource(xsdFileTest5).getFile();
+        String outputPath = new File(xsd).getParent() + File.separator + "SVG.test5";
+        Path fileout = Paths.get(outputPath, File.separator + xsdFileTest5.substring(0, xsdFileTest5.indexOf(".xsd")) + ".svg");
+        if (Files.exists(fileout)) {
+            try {
+                Files.delete(fileout);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        String[] args = new String[]{xsd, "-outputPath", outputPath};
+        XsdVi.main(args);
+
+        assertTrue(Files.exists(fileout));
+        String svgContent = String.join("", Files.readAllLines(fileout));
+        assertTrue(svgContent.contains("See &lt;a"));
+        assertTrue(svgContent.contains("&gt;KB2105352&lt;/a&gt;"));
+    }
 }
