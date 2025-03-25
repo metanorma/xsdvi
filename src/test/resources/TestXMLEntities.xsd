@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:unitsml:schema:xsd:UnitsMLSchema-1.0" targetNamespace="urn:oasis:names:tc:unitsml:schema:xsd:UnitsMLSchema-1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-CSD-04">
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2009/01/xml.xsd"/>
+<xsd:element name="TestXMLEntities">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">Test XML entities.
+See &lt;a href="http://kb.vmware.com/kb/2105352"&gt;KB2105352&lt;/a&gt;.
+                            </xsd:documentation>
+                            <xsd:documentation source="required">false</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+</xsd:schema>
